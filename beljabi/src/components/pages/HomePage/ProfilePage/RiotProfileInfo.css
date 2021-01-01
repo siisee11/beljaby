@@ -1,0 +1,22 @@
+.RiotProfileInfo {
+    color: white;
+    width: 400px;
+    margin: 0 auto;
+  }
+
+.RiotProfileInfo .profile-head {
+    display: flex;
+    align-items: center;
+}
+
+.RiotProfileInfo .profile-head img {
+    display: block;
+    width: 64px;
+    height: 64px;
+    border-radius: 32px;
+    margin-right: 1rem;
+}
+
+.RiotProfileInfo .profile-head .name {
+    font-weight: bold;
+}

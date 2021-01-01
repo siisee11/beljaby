@@ -1,0 +1,12 @@
+.mainpage__container {
+    padding: 10px 10px;
+    width: 100%;
+}
+
+.mainpage__statistic-card {
+    padding: 30px;
+  }
+
+.ant-card-body {
+    box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 7px 20px 0 rgba(0, 0, 0, 0.1);
+}
