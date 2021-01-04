@@ -9,6 +9,11 @@
     @include whenDark {
         box-shadow: 0 4px 20px rgba(#000, 0.5);
     }
+
+    & + & {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
 }
 
 .TextCard__Title {

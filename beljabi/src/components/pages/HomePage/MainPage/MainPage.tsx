@@ -1,55 +1,72 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { useSelector } from 'react-redux'
+import { RootState } from '../../../../modules';
 import './MainPage.css'
-import {useSpring, animated } from 'react-spring'
-
-import Button from "../../../common/Button/Button"
-import { Statistic, Card, Row, Col } from 'antd';
-import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
+import { useSpring, animated } from 'react-spring'
+import { getSummoner } from "../../../../api/beljabi"
 
 const MainPage = () => {
-    const fade = useSpring({ from: { opacity: 0 }, opacity: 1 , delay: 500})
+    const { data } = useSelector((state: RootState) => state.beljabi.userProfile);
+    const [ summoner, setSummoner ] = useState(null)
+    const fade = useSpring({ from: { opacity: 0 }, opacity: 1 , delay: 200})
+
+    const getSummonerInfo = () => {
+        getSummoner(data.summonerId).then( (res) => {
+            setSummoner(res);
+        })
+    }
+
+    useEffect(() => {
+        if (data) {
+            console.log("data", data)
+            getSummonerInfo()
+        }
+    }, [data])
+
+    const eloToTier  = () : string => {
+        let localTier = ''
+        // Tier to Elo
+        if (summoner.elo <= 1100 ){
+            localTier = "BRONZE" 
+        } else if (summoner.elo <= 1300) {
+            localTier = "SILVER" 
+        } else if (summoner.elo <= 1500) {
+            localTier = "GOLD" 
+        } else if (summoner.elo <= 1700) {
+            localTier = "PLATINUM" 
+        } else if (summoner.elo <= 1900) {
+            localTier = "DIAMOND" 
+        } else {
+            localTier = "TIE CHUNG"
+        }
+        return localTier
+    }
 
     return (
-        <animated.div style={fade}>        
-            <div className='mainpage__container .darkBg'>
-                <div className="mainpage_statistic-card">
-                    <Row gutter={16}>
-                        <Col span={12}>
-                            <Card 
-                                bordered={false}>
-                            <Statistic
-                                title="Active"
-                                value={11.28}
-                                precision={2}
-                                valueStyle={{ color: '#3f8600' }}
-                                prefix={<ArrowUpOutlined />}
-                                suffix="%"
-                            />
-                            </Card>
-                        </Col>
-                        <Col span={12}>
-                            <Card
-                                bordered={false}
-                                className='mainpage__card'>
-                            <Statistic
-                                title="Idle"
-                                value={9.3}
-                                precision={2}
-                                valueStyle={{ color: '#cf1322' }}
-                                prefix={<ArrowDownOutlined />}
-                                suffix="%"
-                            />
-                            </Card>
-                        </Col>
-                    </Row>
-                </div>
-                <Button
-                    color="pink"
-                >
-                    Load Currency
-                </Button>
-            </div>
-        </animated.div>
+        <>
+        { data && summoner ? 
+            (
+                <animated.div style={fade}>        
+                    <div className='mainpage__container'>
+                        <div className="TextCard">
+                            <h2 className="TextCard__Title">You are {data.name}</h2>
+                            <p className="TextCard__Body">
+                                Solo rank Tier: {summoner.tier}
+                            </p>
+                            <p className="TextCard__Body">
+                                SKKU rank Tier: {eloToTier()}
+                            </p>
+                            <p className="TextCard__Body">
+                                SKKU Elo : {Math.round(summoner.elo)}
+                            </p>
+                        </div>
+                    </div>
+                </animated.div>
+            )  :  (
+                null
+            )
+        }
+        </>
     )
 }
 

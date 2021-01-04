@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import { BrowserRouter as Router, Switch, Route, Redirect } from 'react-router-dom';
 import HomeRouter from './components/pages/HomePage/HomeRouter'
+import ScrollToTop from './components/ScrollToTop'
 import Login from './components/pages/Login/Login'
-import styled from "styled-components"
+import styled, { ThemeProvider } from "styled-components"
 import { useSelector } from 'react-redux'
 import { RootState } from './modules';
 
@@ -17,15 +18,17 @@ import "./styles/_index.scss";
 const StyledApp = styled.div``;
 
 const App: React.FC = () => {
-  const { user } = useSelector((state: RootState) => state.google.userProfile);
+  const { user, loading, error } = useSelector((state: RootState) => state.google.userProfile);
+  const { data } = useSelector((state: RootState) => state.beljabi.userProfile);
 
   return (
     <StyledApp>
       <div className="app">
         <Router>
-            { !user && <Login /> }
-            { user && (
+            { !data && <Login /> }
+            { data && (
               <>
+                <ScrollToTop /> 
                 <Switch>
                   <Redirect exact path="/" to="/home" />
                   <Route exact path='/home' component={HomeRouter} />

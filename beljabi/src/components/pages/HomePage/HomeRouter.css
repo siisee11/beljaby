@@ -67,10 +67,18 @@
   width: 45px;
 }
 
+.anticon {
+  color: var(--foregroundSecondary)
+}
+
+.ant-layout {
+  background: var(--backgroundPrimary);
+}
+
 .site-layout-header .site-layout-background {
   background: var(--backgroundSecondary);
 }
 
 .site-layout .site-layout-background {
-  background: var(--backgroundPrimary);
+  background: var(--backgroundSecondary);
 }

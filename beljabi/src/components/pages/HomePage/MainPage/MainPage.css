@@ -1,4 +1,7 @@
 .mainpage__container {
+    display: grid;
+    place-items: center;
+    text-align: center;
     padding: 10px 10px;
     width: 100%;
 }
