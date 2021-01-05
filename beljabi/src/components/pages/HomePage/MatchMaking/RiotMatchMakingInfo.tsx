@@ -70,14 +70,14 @@ function RiotMatchMakingInfo({ teams }: RiotMatchMakingInfoProps) {
                       </p>
                     </div>
                     <img src={localInfo[2]} alt="base"
-                        style={{width:"80px", margin:"-200px 0px 0px 300px", zIndex:2}} 
+                        style={{width:"80px", height:"80px", margin:"40px 0px 0px -40px", zIndex:2}} 
                     />
                   </div>
                 )
               })
             }
           </div>
-          <Title style={{alignSelf:"center", margin: "70px 100px 70px 70px"}}> VS </Title>
+          <Title className= "vs-divider" style={{alignSelf:"center", margin: "70px 100px 70px 70px"}}> VS </Title>
           <div className="RiotMatchMakingInfo__team">
             {
               teams[1].map((player) => {
@@ -92,7 +92,7 @@ function RiotMatchMakingInfo({ teams }: RiotMatchMakingInfoProps) {
 
                     </div>
                     <img src={localInfo[2]} alt="base"
-                        style={{width:"80px", margin:"-200px 0px 0px -40px", zIndex:2}} 
+                        style={{width:"80px", height:"80px", margin:"40px 0px 0px -380px", zIndex:2}} 
                     />
                   </div>
                 )

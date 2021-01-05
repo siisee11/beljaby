@@ -5,14 +5,16 @@
     background: var(--backgroundSecondary);
     width: 340px;
     text-align: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
 
     @include whenDark {
-        box-shadow: 0 4px 20px rgba(#000, 0.5);
+        box-shadow: 0 4px 20px rgba(rgb(46, 46, 46), 0.5);
     }
 
     & + & {
-        margin-top: 1rem;
-        margin-bottom: 1rem;
+        margin-top: 10px;
+        margin-bottom: 20px;
     }
 }
 

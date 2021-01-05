@@ -27,3 +27,7 @@
     display: flex;
     
 }
+
+.ant-typography {
+    color: var(--foregroundPrimary) !important
+}
