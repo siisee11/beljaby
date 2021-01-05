@@ -35,3 +35,7 @@
 .RiotMatchForm button:hover {
   background: #495057;
 }
+
+.ant-form-item-required {
+  color: var(--foregroundPrimary) !important
+}

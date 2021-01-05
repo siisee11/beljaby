@@ -6,12 +6,13 @@ import RiotMatchLoader from "./Match/RiotMatchLoader"
 import RiotMatchMakingLoader from "./MatchMaking/RiotMatchMakingLoader"
 import MainPage from './MainPage/MainPage'
 import MyRooms from './MyRooms/MyRooms';
-import { useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import { setUserProfileNullThunk } from "../../../modules/google"
 import { setAppUserProfileNullThunk } from "../../../modules/beljabi"
 import { syncElo } from '../../../api/beljabi';
 import firebase from "firebase/app";
 import './HomeRouter.css'
+import { RootState } from "../../../modules"
 
 import { Layout, Menu, Popconfirm } from 'antd';
 import {
@@ -29,6 +30,7 @@ import {
 const { Content, Header, Sider } = Layout;
 
 function Home() {
+  const dark = useSelector((state: RootState) => state.dark.dark);
   const [ collapsed, setCollapsed ] = useState<boolean>(true)
   const location = useLocation();
   const dispatch = useDispatch();
@@ -63,10 +65,11 @@ function Home() {
               <Sider trigger={null} collapsible collapsed={collapsed}>
               <div className={ collapsed ? "logo collapsed" : "logo"} >
                   <img src={ 
-                    collapsed ? "images/Beljabi-mini-white.png" : "images/Beljabi-white.png" 
+                    collapsed ? (dark ? "images/Beljabi-mini-white.png" : "images/Beljabi-mini-black.png")
+                      : ( dark ? "images/Beljabi-white.png"  : "images/Beljabi-black.png" )
                     } alt="BJB" width={ collapsed ? "45" : "100"}/>
               </ div>
-              <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
+              <Menu theme={ dark ? "dark" : "light"} mode="inline" defaultSelectedKeys={['1']}>
                   <Menu.Item key="1" icon={<HomeOutlined />}>
                     <Link to='/home' >
                       Home
@@ -101,10 +104,17 @@ function Home() {
                       className: 'trigger',
                       onClick: toggle,
                     })}
+                    <Popconfirm    title="Are you sure to sign out?"
+                      onConfirm={signOut}
+                      onCancel={cancel}
+                      okText="Yes"
+                      cancelText="No"
+                    >
                     {React.createElement(LogoutOutlined, {
                       className: 'trigger',
-                      onClick: signOut,
+//                      onClick: signOut,
                     })}
+                    </Popconfirm>
                     <Popconfirm    title="Are you sure to refresh Elo?"
                       onConfirm={sync}
                       onCancel={cancel}

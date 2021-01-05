@@ -22,3 +22,8 @@
 .RiotMatchMakingInfo .profile-head .name {
     font-weight: bold;
 }
+
+.RiotMatchMakingInfo .player {
+    display: flex;
+    
+}

@@ -103,7 +103,7 @@ function RiotMatchForm({ onSubmitMatch }: RiotMatchFormProps) {
                   rules={[{ required: true, message: 'Missing name' }]}
                 >
                   <Select style={{ width: 130 }}>
-                    {(users).map((item: string) => (
+                    {users && (users).map((item: string) => (
                       <Option key={item} value={item}>
                         {item}
                       </Option>

@@ -43,7 +43,7 @@ function RiotMatchMakingForm({ onSubmitMatchMaking }: RiotMatchMakingFormProps) 
   useEffect(() => {
       getSummonerList().then( (res) => {
         var summonerNameList = [];
-        res.ferEach((u : UserListItem) => {
+        res.forEach((u : UserListItem) => {
           summonerNameList.push(u.summonerName)
         })
         setUsers(summonerNameList)

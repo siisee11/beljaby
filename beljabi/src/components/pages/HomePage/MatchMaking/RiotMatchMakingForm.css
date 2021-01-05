@@ -35,3 +35,7 @@
   .RiotMatchMakingForm button:hover {
     background: #495057;
   }
+
+  .ant-form-item-label > label {
+    color: var(--foregroundPrimary) !important
+  }

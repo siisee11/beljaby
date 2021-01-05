@@ -38,7 +38,7 @@ const MainPage = () => {
                         dataSource={users}
                         renderItem={(item : UserListItem) => (
                             <List.Item>
-                            <Typography.Text mark>[{Math.round(item.elo)}]</Typography.Text> {item.name} - {item.gname}
+                            <Typography.Text strong>[{Math.round(item.elo)}]</Typography.Text> {item.name} - {item.gname}
                             </List.Item>
                         )}
                     />

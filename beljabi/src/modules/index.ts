@@ -4,6 +4,7 @@ import github from './github'
 import google from "./google"
 import riot from "./riot"
 import beljabi from "./beljabi"
+import dark from "./dark"
 
 const rootReducer = combineReducers({
   user,
@@ -11,6 +12,7 @@ const rootReducer = combineReducers({
   google,
   beljabi,
   riot,
+  dark,
 });
 
 export default rootReducer;
