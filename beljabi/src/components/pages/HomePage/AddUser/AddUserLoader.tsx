@@ -1,8 +1,5 @@
-import React, {useState} from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '../../../../modules';
+import React from 'react';
 import AddUserForm from './AddUserForm';
-import AddUserInfo from './AddUserInfo';
 
 import axios from '../../../../axios'
 import { message } from 'antd';

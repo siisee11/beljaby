@@ -2,7 +2,6 @@ import { ThunkAction } from 'redux-thunk';
 import { RootState } from '..';
 import { RiotAction } from './types';
 import { getUserProfileAsync } from './actions';
-import axios from "../../axios"
 
 export function getUserProfileThunk(username: string): ThunkAction<void, RootState, null, RiotAction> {
   return async dispatch => {

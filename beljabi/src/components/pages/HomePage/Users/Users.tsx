@@ -5,17 +5,7 @@ import './Users.css'
 import {useSpring, animated } from 'react-spring'
 
 import { getUserList } from '../../../../api/beljabi'
-import Button from "../../../common/Button/Button"
 import { List, Typography } from 'antd';
-import { ArrowUpOutlined, ArrowDownOutlined } from '@ant-design/icons';
-
-const data1 = [
-    'Racing car sprays burning fuel into crowd.',
-    'Japanese princess to wed commoner.',
-    'Australian walks 100km after outback crash.',
-    'Man charged over missing wedding girl.',
-    'Los Angeles battles huge wildfires.',
-  ];
 
 type UserListItem = {
     gname: string,

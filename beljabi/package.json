@@ -75,6 +75,7 @@
     ]
   },
   "devDependencies": {
+    "@types/react-responsive": "^8.0.2",
     "@types/styled-components": "^5.1.7"
   }
 }

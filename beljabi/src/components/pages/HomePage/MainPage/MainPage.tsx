@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useSelector } from 'react-redux'
 import { RootState } from '../../../../modules';
 import './MainPage.css'
@@ -10,18 +10,16 @@ const MainPage = () => {
     const [ summoner, setSummoner ] = useState(null)
     const fade = useSpring({ from: { opacity: 0 }, opacity: 1 , delay: 200})
 
-    const getSummonerInfo = () => {
-        getSummoner(data.summonerId).then( (res) => {
-            setSummoner(res);
-        })
-    }
+    const getSummonerInfo = useCallback( async () => {
+        const res = await getSummoner(data.summonerId);
+        setSummoner(res);
+    }, [data])
 
     useEffect(() => {
         if (data) {
-            console.log("data", data)
             getSummonerInfo()
         }
-    }, [data])
+    }, [data, getSummonerInfo])
 
     const eloToTier  = () : string => {
         let localTier = ''

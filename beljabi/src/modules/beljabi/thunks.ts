@@ -32,7 +32,7 @@ export function setAppUserProfileThunk(user: BeljabiProfile): ThunkAction<void, 
 
 export function setAppUserProfileNullThunk(): ThunkAction<void, RootState, null, BeljabiAction> {
   return async dispatch => {
-    const { request, success, failure } = getUserProfileAsync;
+    const { success } = getUserProfileAsync;
     dispatch(success(null))
   };
 }

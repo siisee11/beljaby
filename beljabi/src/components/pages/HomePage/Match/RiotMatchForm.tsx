@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import './RiotMatchForm.css';
-import { Form, Input, InputNumber, Button, Space, Select } from 'antd';
+import { Form, InputNumber, Button, Space, Select } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/lib/form';
 
-import { getSummonerList, getUserList } from '../../../../api/beljabi'
+import { getSummonerList } from '../../../../api/beljabi'
 
 type RiotMatchFormProps = {
   onSubmitMatch: (match: object) => void;
@@ -32,7 +32,7 @@ function RiotMatchForm({ onSubmitMatch }: RiotMatchFormProps) {
   useEffect(() => {
       getSummonerList().then( (res) => {
         var summonerNameList = [];
-        res.map((u : UserListItem) => {
+        res.forEach((u : UserListItem) => {
           summonerNameList.push(u.summonerName)
         })
         setUsers(summonerNameList)
@@ -49,10 +49,6 @@ function RiotMatchForm({ onSubmitMatch }: RiotMatchFormProps) {
     formRef.current.resetFields();
   };
   
-  const onFinishFailed = (errorInfo : object) => {
-      console.log('Failed:', errorInfo);
-  };
-
   return (
     <Form ref={formRef}form={form} name="dynamic_form_nest_item" onFinish={onFinish} autoComplete="off">
       <Form.List name="player">

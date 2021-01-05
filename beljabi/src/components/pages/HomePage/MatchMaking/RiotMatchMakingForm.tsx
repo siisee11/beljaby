@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import './RiotMatchMakingForm.css';
-import { Form, Input, InputNumber, Button, Space, Select } from 'antd';
+import { Form, Button, Select } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/lib/form';
 
-import { getSummonerList, getUserList } from '../../../../api/beljabi'
+import { getSummonerList} from '../../../../api/beljabi'
 
 type RiotMatchMakingFormProps = {
   onSubmitMatchMaking: (match: object) => void;
@@ -43,7 +43,7 @@ function RiotMatchMakingForm({ onSubmitMatchMaking }: RiotMatchMakingFormProps) 
   useEffect(() => {
       getSummonerList().then( (res) => {
         var summonerNameList = [];
-        res.map((u : UserListItem) => {
+        res.ferEach((u : UserListItem) => {
           summonerNameList.push(u.summonerName)
         })
         setUsers(summonerNameList)
@@ -63,7 +63,7 @@ function RiotMatchMakingForm({ onSubmitMatchMaking }: RiotMatchMakingFormProps) 
         rules={[
           {
             validator: async (_, names) => {
-              if (!names || names.length != 10) {
+              if (!names || names.length !== 10) {
                 return Promise.reject(new Error('Need 10 summoners'));
               }
             },

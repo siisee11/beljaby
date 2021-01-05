@@ -1,10 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React  from 'react';
 import './AddUserForm.css';
-import { Form, Input, InputNumber, Button, Space, Select } from 'antd';
+import { Form, Input, Button, Space } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/lib/form';
-
-import { getUserList } from '../../../../api/beljabi'
 
 type AddUserFormProps = {
   onSubmitSummoner: (summoner: object) => void;
@@ -13,12 +11,6 @@ type AddUserFormProps = {
 const tailLayout = {
   wrapperCol: { offset: 0, span: 0},
 };
-
-type UserListItem = {
-    gname: string,
-    name: string,
-    elo: number,
-}
 
 function AddUserForm({ onSubmitSummoner }: AddUserFormProps) {
   const [form] = Form.useForm();
@@ -34,10 +26,6 @@ function AddUserForm({ onSubmitSummoner }: AddUserFormProps) {
     formRef.current.resetFields();
   };
   
-  const onFinishFailed = (errorInfo : object) => {
-      console.log('Failed:', errorInfo);
-  };
-
   return (
     <Form ref={formRef}form={form} name="dynamic_form_nest_item" onFinish={onFinish} autoComplete="off">
       <Form.List name="player">

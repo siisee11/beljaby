@@ -33,7 +33,7 @@ export function getUserProfileThunk(): ThunkAction<void, RootState, null, Google
 
 export function setUserProfileNullThunk(): ThunkAction<void, RootState, null, GoogleAction> {
   return async dispatch => {
-    const { request , success, failure } = getUserProfileAsync;
+    const { success } = getUserProfileAsync;
     dispatch(success(null))
   }
 }

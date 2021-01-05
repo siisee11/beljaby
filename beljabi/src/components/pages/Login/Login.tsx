@@ -53,7 +53,7 @@ const Login = () => {
         if (user) {
             dispatch(getAppUserProfileThunk(user.email))
         }
-    }, [user])
+    }, [user, dispatch])
 
     const handleChange = (e: any) => {
         const { name, value } = e.target

@@ -11,14 +11,6 @@ type RiotMatchInfoProps = {
 
 function RiotMatchInfo({ name, profileIconId, level, id, accountId }: RiotMatchInfoProps) {
   return (
-    <div className="RiotMatchInfo">
-      <div className="profile-head">
-        <div className="name">{name}</div>
-      </div>
-      <p>level : {level}</p>
-      <p>AID   : {accountId}</p>
-      <p>SID   : {id}</p>
-    </div>
   );
 }
 

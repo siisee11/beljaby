@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { BrowserRouter as Router, Switch, Route, Link, useLocation } from "react-router-dom";
 import Users from "./Users/Users"
 import AddUser from "./AddUser/AddUserLoader"
@@ -6,7 +6,7 @@ import RiotMatchLoader from "./Match/RiotMatchLoader"
 import RiotMatchMakingLoader from "./MatchMaking/RiotMatchMakingLoader"
 import MainPage from './MainPage/MainPage'
 import MyRooms from './MyRooms/MyRooms';
-import { useSelector, useDispatch } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { setUserProfileNullThunk } from "../../../modules/google"
 import { setAppUserProfileNullThunk } from "../../../modules/beljabi"
 import { syncElo } from '../../../api/beljabi';
@@ -17,7 +17,6 @@ import { Layout, Menu, Popconfirm } from 'antd';
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  UserOutlined,
   UserAddOutlined,
   TeamOutlined,
   HomeOutlined,
@@ -28,24 +27,11 @@ import {
 } from '@ant-design/icons';
 
 const { Content, Header, Sider } = Layout;
-const { SubMenu } = Menu;
 
 function Home() {
   const [ collapsed, setCollapsed ] = useState<boolean>(true)
   const location = useLocation();
   const dispatch = useDispatch();
-  const [isDark, setIsDark] = useState(null);
-
-  useEffect(() => {
-    if(document.documentElement.classList.contains("dark")){
-      setIsDark(true)
-    }
-    else {
-      setIsDark(false)
-    }
-  }, [document.documentElement.classList])
-
-  console.log(location)
 
   const signOut = () => {
     firebase.auth().signOut().then(function() {
@@ -63,10 +49,6 @@ function Home() {
   const sync = () => {
     syncElo()
   }
-
-  function confirm(e) {
-    console.log(e);
-  }
   
   function cancel(e) {
     console.log(e);
@@ -81,7 +63,7 @@ function Home() {
               <Sider trigger={null} collapsible collapsed={collapsed}>
               <div className={ collapsed ? "logo collapsed" : "logo"} >
                   <img src={ 
-                    collapsed ? ( isDark ? "images/Beljabi-mini-white.png" : "images/Beljabi-mini-black.png") : ( isDark ? "images/Beljabi-white.png" : "images/Beljabi-black.png")
+                    collapsed ? "images/Beljabi-mini-white.png" : "images/Beljabi-white.png" 
                     } alt="BJB" width={ collapsed ? "45" : "100"}/>
               </ div>
               <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
