@@ -5,7 +5,7 @@ import firebase from "firebase/app";
 import { auth, provider } from "../../../firebase";
 
 import { useSelector, useDispatch } from 'react-redux';
-import { setUserProfileThunk, setUserProfileLoadingThunk } from "../../../modules/google"
+import { setUserProfileThunk } from "../../../modules/google"
 import { getAppUserProfileThunk, setAppUserProfileThunk } from "../../../modules/beljabi"
 import { RootState } from "../../../modules"
 
@@ -31,7 +31,7 @@ const Button = styled.a< { primary : boolean } >`
 
 const Login = () => {
     const dispatch = useDispatch();
-    const { user, gloading } = useSelector((state: RootState) => state.google.userProfile);
+    const { user } = useSelector((state: RootState) => state.google.userProfile);
     const { data, loading } = useSelector((state: RootState) => state.beljabi.userProfile);
     const [ values, setValues ] = useState({ summonerName: ''})
     const [ isRedirection, setIsRedirection ] = useState(false)
@@ -70,7 +70,7 @@ const Login = () => {
                 alert(error.message);
                 setIsRedirection(false)
             });
-    }, [])
+    }, [dispatch])
 
     useEffect(() => {
         console.log("Login user change", user)

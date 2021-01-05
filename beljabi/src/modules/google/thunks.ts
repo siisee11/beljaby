@@ -3,7 +3,6 @@ import { RootState } from '..';
 import { GoogleAction } from './types';
 import { getUserProfileAsync } from './actions';
 import firebase from "firebase/app";
-import { auth, provider } from "../../firebase";
 
 export function setUserProfileThunk(user: firebase.User): ThunkAction<void, RootState, null, GoogleAction> {
   return async dispatch => {
