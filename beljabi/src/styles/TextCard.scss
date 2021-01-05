@@ -9,7 +9,7 @@
     margin-bottom: 20px;
 
     @include whenDark {
-        box-shadow: 0 4px 20px rgba(rgb(46, 46, 46), 0.5);
+        box-shadow: 0 4px 20px rgba(rgb(0, 0, 0), 0.5);
     }
 
     & + & {

@@ -6,8 +6,8 @@ export type GoogleAction = ActionType<typeof actions>;
 
 export type GoogleState = {
   userProfile: {
-    loading: boolean;
-    error: Error | null;
+    gloading: boolean;
+    gerror: Error | null;
     user: firebase.User | null;
   };
 };

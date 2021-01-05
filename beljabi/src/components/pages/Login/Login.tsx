@@ -1,9 +1,11 @@
 import React , { useState, useEffect } from 'react'
 import "./Login.css";
 import styled, {css} from "styled-components"
+import firebase from "firebase/app";
+import { auth, provider } from "../../../firebase";
 
 import { useSelector, useDispatch } from 'react-redux';
-import { getUserProfileThunk } from "../../../modules/google"
+import { setUserProfileThunk, setUserProfileLoadingThunk } from "../../../modules/google"
 import { getAppUserProfileThunk, setAppUserProfileThunk } from "../../../modules/beljabi"
 import { RootState } from "../../../modules"
 
@@ -29,12 +31,22 @@ const Button = styled.a< { primary : boolean } >`
 
 const Login = () => {
     const dispatch = useDispatch();
-    const { user } = useSelector((state: RootState) => state.google.userProfile);
+    const { user, gloading } = useSelector((state: RootState) => state.google.userProfile);
     const { data, loading } = useSelector((state: RootState) => state.beljabi.userProfile);
     const [ values, setValues ] = useState({ summonerName: ''})
+    const [ isRedirection, setIsRedirection ] = useState(false)
 
     const signIn = () => {
-        dispatch(getUserProfileThunk());
+        auth.setPersistence(firebase.auth.Auth.Persistence.SESSION).then(function() {
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    dispatch(setUserProfileThunk(user));
+                } else {
+                    auth.signInWithRedirect(provider)
+                    setIsRedirection(true)
+                }
+            })
+        })
     };
 
     const setAppuser = () => {
@@ -49,7 +61,19 @@ const Login = () => {
     }
 
     useEffect(() => {
-        console.log("Login user change")
+        setIsRedirection(true)
+        auth.getRedirectResult()
+            .then((result) => {
+                dispatch(setUserProfileThunk(result.user));
+                setIsRedirection(false)
+            }).catch((error) => {
+                alert(error.message);
+                setIsRedirection(false)
+            });
+    }, [])
+
+    useEffect(() => {
+        console.log("Login user change", user)
         if (user) {
             dispatch(getAppUserProfileThunk(user.email))
         }
@@ -71,7 +95,7 @@ const Login = () => {
             </video>
             */}
             {
-                !user && (
+                !isRedirection && !user && (
                 <div className="TextCard">
                     <h2 className="TextCard__Title">Login to BELJABY🎲</h2>
                     <p className="TextCard__Body">
@@ -89,6 +113,7 @@ const Login = () => {
                 </div>
                 )
             }
+            {   isRedirection && ( <Spin className="login__spinner" /> )}
             {   loading && ( <Spin className="login__spinner" /> )}
             {
                 user && !loading && !data && (

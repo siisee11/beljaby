@@ -85,7 +85,7 @@ const MainPage = () => {
                             </p>
                         </div>
                         <img src={localTierTrim} alt="trim"
-                            style={{width:"350px", margin:"-150px"}} 
+                            style={{width:"350px", margin:"-105px 0 0 0"}} 
                         />
                     </div>
                 </animated.div>
