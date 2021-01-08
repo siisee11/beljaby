@@ -2,15 +2,6 @@ import React, { useEffect, useState } from 'react'
 import './MainPage.css'
 import { useSpring, animated } from 'react-spring'
 
-type Summoner = {
-  _id: string,
-  tier: string,
-  elo: number,
-  summonerId: string,
-  accountId: string,
-  summonerName: string,
-}
-
 type ProfileInfoProps = {
   summoner: Summoner,
 };
