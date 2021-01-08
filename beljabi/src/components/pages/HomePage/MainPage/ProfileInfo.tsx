@@ -1,9 +1,6 @@
-import React, { useEffect, useState, useCallback } from 'react'
-import { useSelector } from 'react-redux'
-import { RootState } from '../../../../modules';
+import React, { useEffect, useState } from 'react'
 import './MainPage.css'
 import { useSpring, animated } from 'react-spring'
-import { getSummoner } from "../../../../api/beljabi"
 
 type Summoner = {
   _id: string,
@@ -19,7 +16,7 @@ type ProfileInfoProps = {
 };
 
 const MainPage = ({ summoner }: ProfileInfoProps) => {
-    const [ localInfo, setLocalInfo ] = useState(null)
+    const [ localInfo, setLocalInfo ] = useState<string[]>([])
     const fade = useSpring({ from: { opacity: 0 }, opacity: 1 , delay: 200})
 
     useEffect(() => {

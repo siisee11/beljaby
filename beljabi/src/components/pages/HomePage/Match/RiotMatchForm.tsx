@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import './RiotMatchForm.css';
-import { Form, Button, Select, Input } from 'antd';
+import { Form, Button, Input } from 'antd';
 import { FormInstance } from 'antd/lib/form';
 import { MatchProps } from "./RiotMatchLoader"
 

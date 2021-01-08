@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import './RiotMatchInfoForm.css';
 import { getSummonerList } from '../../../../api/beljabi'
-import { MatchProps, MatchInfo } from "./RiotMatchLoader"
-import { Typography, Select, Input, AutoComplete, Button } from 'antd';
-import Form from 'antd/lib/form/Form';
+import { MatchInfo } from "./RiotMatchLoader"
+import { Typography, Input, Button } from 'antd';
 
 const { Title } = Typography;
 
@@ -18,7 +17,7 @@ type RiotMatchInfoFormProps = {
 };
 
 function RiotMatchInfoForm({ onSubmitMatch, matchInfo }: RiotMatchInfoFormProps) {
-  const [ users, setUsers ] = useState([])
+//  const [ users, setUsers ] = useState([])
   const [values, setValues] = useState({})
   
   useEffect(() => {
@@ -29,8 +28,6 @@ function RiotMatchInfoForm({ onSubmitMatch, matchInfo }: RiotMatchInfoFormProps)
         })
         setUsers(summonerNameList)
       }) 
-
-      console.log(matchInfo)
   }, [])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,14 +49,6 @@ function RiotMatchInfoForm({ onSubmitMatch, matchInfo }: RiotMatchInfoFormProps)
     onSubmitMatch(matchInfo);
   };
 
-  const onSelect = (data: string) => {
-    console.log('onSelect', data);
-  };
-
-  const onChange = (data: string) => {
-    console.log(data);
-  };
-
   return (
     <div className="RiotMatchInfoForm">
       <Title level={5}>MatchId : {matchInfo.matchId} </Title>
@@ -67,7 +56,7 @@ function RiotMatchInfoForm({ onSubmitMatch, matchInfo }: RiotMatchInfoFormProps)
         matchInfo["teams"].map((team, i) => {
           return (
             <div className="Team">
-            <Title level={3}>{team["win"] == "Win" ? "Win" : "Defeat" }</Title>
+            <Title level={3}>{team["win"] === "Win" ? "Win" : "Defeat" }</Title>
             <Title level={5}>
               Baron: {team["baronKills"]} / Dragon: {team["dragonKills"]} / Tower: {team["towerKills"]}
             </Title>
