@@ -18,16 +18,32 @@ const userSchema = new mongoose.Schema({
 });
 
 const matchSchema = new mongoose.Schema({
-    player: [
+    matchId: { type: String, required: true, unique: true },
+    teams: [
         {
-            team: String,
-            position: String,
-            name: String,
-            summoner: {type : mongoose.Schema.Types.ObjectId, ref: 'Summoner'},
-            kill: Number,
-            death: Number,
-            assist: Number,
-        }
+            teamId: Number,
+            win: String,
+            baronKills: Number,
+            dragonKills: Number,
+            towerKills: Number,
+            participants: [
+                {
+                    teamId: Number,
+                    win: String,
+                    champion: String,
+                    lane: String,
+                    name: String,
+                    kills: Number,
+                    deaths: Number,
+                    assists: Number,
+                    firstBloodKill: Boolean,
+                    firstTowerKill: Boolean,
+                    visionScore: Number,
+                    totalCS: Number,
+                    summoner: {type : mongoose.Schema.Types.ObjectId, ref: 'Summoner'},
+                }
+            ],
+        }   
     ],
     timestamp: { type: Date, default: Date.now },
 });

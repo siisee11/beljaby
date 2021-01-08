@@ -3,6 +3,11 @@
     width: 100%;
 }
 
+.mainpage__profile {
+    display: grid;
+    place-items: center;
+}
+
 .mainpage__statistic-card {
     padding: 30px;
   }

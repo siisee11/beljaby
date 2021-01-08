@@ -4,7 +4,7 @@ import Users from "./Users/Users"
 import AddUser from "./AddUser/AddUserLoader"
 import RiotMatchLoader from "./Match/RiotMatchLoader"
 import RiotMatchMakingLoader from "./MatchMaking/RiotMatchMakingLoader"
-import MainPage from './MainPage/MainPage'
+import MainPageLoader from './MainPage/MainPageLoader'
 import MyRooms from './MyRooms/MyRooms';
 import { useSelector, useDispatch } from 'react-redux'
 import { setUserProfileNullThunk } from "../../../modules/google"
@@ -14,7 +14,7 @@ import firebase from "firebase/app";
 import './HomeRouter.css'
 import { RootState } from "../../../modules"
 
-import { Layout, Menu, Popconfirm } from 'antd';
+import { Layout, Menu, Popconfirm, message } from 'antd';
 import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
@@ -48,8 +48,9 @@ function Home() {
       setCollapsed((origin) => !origin)
   }
 
-  const sync = () => {
-    syncElo()
+  const sync = async () => {
+    await syncElo()
+    message.success('elo recalculated.')
   }
   
   function cancel(e) {
@@ -122,7 +123,6 @@ function Home() {
                       cancelText="No"
                     >
                     {
-
                       React.createElement(SyncOutlined, {
                         className: 'trigger',
 //                        onClick: sync,
@@ -140,7 +140,7 @@ function Home() {
                     }}
                   >
                     <Switch>
-                      <Route exact path={location.pathname} component={MainPage} />
+                      <Route exact path={location.pathname} component={MainPageLoader} />
                       <Route exact path={`/user`} component={Users} />
                       <Route exact path={`/match`} component={RiotMatchLoader} />
                       <Route exact path={`/matchmaking`} component={RiotMatchMakingLoader} />

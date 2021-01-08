@@ -20,9 +20,9 @@ function RiotMatchMakingLoader() {
 
   return (
     <>
-      { !teams && (<RiotMatchMakingForm onSubmitMatchMaking={onSubmitMatchMaking} />) }
+      { !teams && !loading && (<RiotMatchMakingForm onSubmitMatchMaking={onSubmitMatchMaking} />) }
       { loading && (<Spin className="matchmaking__spinner"/>)}
-      { teams && (<RiotMatchMakingInfo teams={teams}/> )}
+      { teams && (<RiotMatchMakingInfo teams={teams.teams} elos={teams.elos} wps={teams.wps}/> )}
     </>
   );
 }

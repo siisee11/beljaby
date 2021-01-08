@@ -14,12 +14,14 @@ type Summoner = {
 }
 
 type RiotMatchMakingInfoProps = {
-  teams: Array<Array<Summoner>>;
+  teams: Array<Array<Summoner>> | null;
+  elos: Array<Array<number>> | null;
+  wps: Array<Array<number>> | null;
 };
 
 const { Title } = Typography;
 
-function RiotMatchMakingInfo({ teams }: RiotMatchMakingInfoProps) {
+function RiotMatchMakingInfo({ teams, elos, wps}: RiotMatchMakingInfoProps) {
   const fade = useSpring({ from: { opacity: 0 }, opacity: 1 , delay: 200})
 
   const eloToTier  = (elo : number) : Array<string> => {
@@ -76,6 +78,9 @@ function RiotMatchMakingInfo({ teams }: RiotMatchMakingInfoProps) {
                 )
               })
             }
+            <Title level={3} style={{alignSelf:"center", margin: "50px"}}> TEAM Elo : {Math.round(elos[0])} </Title>
+            <Title level={3} style={{alignSelf:"center", margin: "50px"}}> Win Persentage : {wps[0]} </Title>
+            
           </div>
           <Title className= "vs-divider" style={{alignSelf:"center", margin: "70px 100px 70px 70px"}}> VS </Title>
           <div className="RiotMatchMakingInfo__team">
@@ -98,6 +103,8 @@ function RiotMatchMakingInfo({ teams }: RiotMatchMakingInfoProps) {
                 )
               })
             }
+            <Title level={3} style={{alignSelf:"center", margin: "50px"}}> TEAM Elo : {Math.round(elos[1])} </Title>
+            <Title level={3} style={{alignSelf:"center", margin: "50px"}}> Win Persentage : {wps[1]} </Title>
           </div>
         </div >
         </animated.div>

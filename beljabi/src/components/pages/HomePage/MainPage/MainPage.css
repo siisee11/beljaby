@@ -1,9 +1,11 @@
 .mainpage__container {
-    display: grid;
-    place-items: center;
-    text-align: center;
     padding: 10px 10px;
     width: 100%;
+}
+
+.mainpage__profile {
+    display: grid;
+    place-items: center;
 }
 
 .mainpage__statistic-card {

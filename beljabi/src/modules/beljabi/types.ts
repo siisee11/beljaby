@@ -8,6 +8,6 @@ export type BeljabiState = {
   userProfile: {
     loading: boolean;
     error: Error | null;
-    data: BeljabiProfile | null;
+    data: BeljabiProfile;
   };
 };

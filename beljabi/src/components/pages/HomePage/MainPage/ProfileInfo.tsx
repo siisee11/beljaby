@@ -5,32 +5,30 @@ import './MainPage.css'
 import { useSpring, animated } from 'react-spring'
 import { getSummoner } from "../../../../api/beljabi"
 
-const MainPage = () => {
-    const { data } = useSelector((state: RootState) => state.beljabi.userProfile);
-    const [ summoner, setSummoner ] = useState(null)
+type Summoner = {
+  _id: string,
+  tier: string,
+  elo: number,
+  summonerId: string,
+  accountId: string,
+  summonerName: string,
+}
+
+type ProfileInfoProps = {
+  summoner: Summoner,
+};
+
+const MainPage = ({ summoner }: ProfileInfoProps) => {
+    const [ localInfo, setLocalInfo ] = useState(null)
     const fade = useSpring({ from: { opacity: 0 }, opacity: 1 , delay: 200})
-    const [ localTier , setLocalTier ] = useState(null)
-    const [ localTierTrim , setLocalTierTrim ] = useState(null)
-    const [ localTierImg , setLocalTierImg ] = useState(null)
-
-    const getSummonerInfo = useCallback( async () => {
-        const res = await getSummoner(data.summonerId);
-        setSummoner(res);
-    }, [data])
-
-    useEffect(() => {
-        if (data) {
-            getSummonerInfo()
-        }
-    }, [data, getSummonerInfo])
 
     useEffect(() => {
         if (summoner) {
-            eloToTier(summoner.elo)
+            setLocalInfo(eloToTier(summoner.elo))
         }
     }, [summoner])
 
-    const eloToTier  = (elo : number) => {
+    const eloToTier  = (elo : number) : Array<string> => {
         let localTier = ''
         let localTierTrim = ''
         let localTierImg = ''
@@ -58,42 +56,38 @@ const MainPage = () => {
             localTier = "TIE CHUNG"
         }
 
-        setLocalTier(localTier)
-        setLocalTierTrim(localTierTrim)
-        setLocalTierImg(localTierImg)
+        return [localTier, localTierTrim, localTierImg]
     }
 
     return (
         <>
-        { data && summoner && localTier && localTierImg ? 
-            (
+        {
+            localInfo ? (
                 <animated.div style={fade}>        
                     <div className='mainpage__container'>
                         <div className='mainpage__profile'>
-                            <img src={localTierImg} alt="base"
+                            <img src={localInfo[2]} alt="base"
                                 style={{width:"80px", margin:"0px 0px -50px", zIndex:2}} 
                             />
                             <div className="TextCard">
-                                <h2 className="TextCard__Title">You are {data.name}</h2>
+                                <h2 className="TextCard__Title">{summoner.summonerName}</h2>
                                 <p className="TextCard__Body">
                                     Solo rank Tier: {summoner.tier}
                                 </p>
                                 <p className="TextCard__Body">
-                                    SKKU rank Tier: {localTier}
+                                    SKKU rank Tier: {localInfo[0]}
                                 </p>
                                 <p className="TextCard__Body">
                                     SKKU Elo : {Math.round(summoner.elo)}
                                 </p>
                             </div>
-                            <img src={localTierTrim} alt="trim"
+                            <img src={localInfo[1]} alt="trim"
                                 style={{width:"350px", margin:"-105px 0 0 0"}} 
                             />
                         </div>
                     </div>
                 </animated.div>
-            )  :  (
-                null
-            )
+            ) : null
         }
         </>
     )

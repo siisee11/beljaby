@@ -148,15 +148,20 @@ app.post('/new/user', (req, res) => {
 
 app.post('/new/match', async (req, res) => {
     const matchData = req.body
-    var newPlayer = []
+    var newTeams = []
 
-    await Promise.all(matchData.player.map( async (player) => {
-        let result = await Summoner.findOne({summonerName: player.name}).exec()
-        player = { ...player, summoner:result._id }
-        newPlayer.push(player)
+    await Promise.all(matchData.teams.map( async (team) => {
+        var newParticipants = []
+        await Promise.all(team.participants.map ( async (participant) => {
+            let result = await Summoner.findOne({summonerName: participant.name}).exec()
+            participant = { ...participant, summoner:result._id }
+            newParticipants.push(participant)
+        }))
+        team = {...team, participants:newParticipants}
+        newTeams.push(team)
     }))
 
-    Match.create({ player: newPlayer }, (err, data) => {
+    Match.create({ ...matchData, teams: newTeams }, (err, data) => {
         if (err) {
             res.status(500).send(err)
         } else {
@@ -164,6 +169,7 @@ app.post('/new/match', async (req, res) => {
         }
     })
 })
+
 
 app.post('/new/summoners', (req, res) => {
     const summoners = req.body.player
@@ -275,45 +281,51 @@ app.get('/sync', async (req, res) => {
     console.log(nrMatch, result)
 
     for ( let i = 0 ; i < nrMatch; i++ ){
-        let matches = await Match.find().populate({ path: 'player.summoner'}).exec()
+        let matches = await Match.find().populate({ path: 'teams.participants.summoner'}).exec()
         var m = matches[i]
+        var elos = [0 , 0]
+        var kills = [0 , 0]
         var winElo = 0
         var defeatElo = 0
         var winKill = 0
         var defeatKill = 0
 
-        await Promise.all(m.player.map( async (player) => {
-            if (player.team == "Win") {
-                winElo += player.summoner.elo
-                winKill += player.kill
-            } else {
-                defeatElo += player.summoner.elo
-                defeatKill += player.kill
-            }
+        await Promise.all(m.teams.map( async (team) => {
+            var teamId = (team.win == "Win" ? 0 : 1)
+            console.log(teamId)
+            await Promise.all(team.participants.map ( async (participant) => {
+                elos[teamId] += participant.summoner.elo
+                kills[teamId] += participant.kills
+            }));
         }))
-        console.log("win", winElo, winKill, "defeat", defeatElo, defeatKill)
-        var winE = 1 / ( 1 + Math.pow(10, (defeatElo - winElo)/400))
-        var defeatE = 1 / ( 1 + Math.pow(10, (winElo - defeatElo )/400))
-        console.log("winE", winE, "defeatE", defeatE)
 
-        var winR = 200 * (1 - winE) 
-        var defeatR = 200 * (0 - defeatE)
-        console.log("winR", winR, "defeatR", defeatR)
+        console.log("win", elos[0], kills[0], "defeat", elos[1], kills[1])
+        var expectedWinRates = [0, 0]
+        expectedWinRates[0] = 1 / ( 1 + Math.pow(10, (elos[1] - elos[0])/400))
+        expectedWinRates[1] = 1 / ( 1 + Math.pow(10, (elos[0] - elos[1])/400))
+        console.log("winE", expectedWinRates[0], "defeatE", expectedWinRates[1])
 
-        await Promise.all(m.player.map( async (player) => {
-            var contribution = 0;
-            var gain = 0;
-            if (player.team == "Win"){
-                contribution = 0.4 + (player.kill + player.assist) / winKill
-                gain = winR / 5
-            } else {
-                contribution = 1.2 - ((player.kill + player.assist) / defeatKill)
-                gain = defeatR / 5
-            }
-            console.log(contribution)
-            var newElo = player.summoner.elo + gain * contribution - (player.death * 0.5)
+        var deltas = [0, 0]
+        deltas[0] = 50 * (1 - expectedWinRates[0]) 
+        deltas[1] = 50 * (0 - expectedWinRates[1]) 
+        console.log("winR", deltas[0], "defeatR", deltas[1])
 
-            await Summoner.updateOne({summonerName: player.name }, {elo: newElo});
+        await Promise.all(m.teams.map( async (team) => {
+            await Promise.all(team.participants.map ( async (participant) => {
+                var contribution = 0;
+                var gain = 0;
+                if ( participant.win == "true"){
+                    contribution = 0.3 + ((participant.kills + participant.assists) / kills[0])
+                    gain = deltas[0]
+                } else {
+                    contribution = 1.2 - ((participant.kills + participant.assists) / kills[1])
+                    gain = deltas[1]
+                }
+                var newElo = participant.summoner.elo + gain * contribution - (participant.deaths * 0.5) + 0.02 * participant.totalCS
+                console.log(participant.name, gain* contribution- (participant.deaths * 0.5) + 0.02 * participant.totalCS )
+
+                await Summoner.updateOne({summonerName: participant.name }, {elo: newElo});
+            }))
         }))
     }
 
@@ -415,11 +427,90 @@ app.post('/get/matchmaking', async (req, res) => {
         teamElo[turn] += pair[i].elo
     }
 
+    let wps = []
+    wps.push(100 * (1 / (1 + Math.pow(10, (teamElo[1]/5 - teamElo[0]/5)/400))))
+    wps.push(100 * (1 / (1 + Math.pow(10, (teamElo[0]/5 - teamElo[1]/5)/400))))
+
     console.log("teams", teams)
     console.log("teamElo", teamElo)
+    console.log("win persentage", wps)
 
-    res.status(200).send(teams)
+    res.status(200).send({ teams: teams, elos: teamElo, wps: wps})
 })
+
+app.get('/get/matchById', async (req, res) => {
+    const matchId = req.query.matchId
+    let teamInfo = []
+    let matchInfo = []
+
+    axios.get('http://ddragon.leagueoflegends.com/cdn/11.1.1/data/ko_KR/champion.json')
+    .then( (data) => {
+        let ch_data = data.data
+
+        axios({
+            method: "GET",
+            url: `https://kr.api.riotgames.com/lol/match/v4/matches/${matchId}`,
+            headers: {
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36 Edg/87.0.664.66",
+                "Accept-Language": "ko,en;q=0.9,en-US;q=0.8",
+                "Accept-Charset": "application/x-www-form-urlencoded; charset=UTF-8",
+                "Origin": "https://developer.riotgames.com",
+                "X-Riot-Token": "RGAPI-49e9f548-3dd6-45de-a9e7-b78166efa6b0"
+            },
+        }).then( (res1) => {
+            let match_data = res1.data
+            for (let i = 0 ; i < 2 ; i++ ) {
+                let team_data = match_data["teams"][i]
+                let trim_team = {
+                    teamId: team_data["teamId"],
+                    win: team_data["win"],
+                    baronKills: team_data["baronKills"],
+                    dragonKills: team_data["dragonKills"],
+                    towerKills: team_data["towerKills"],
+                }
+
+                let participants_data = []
+
+                for (let j = 5 * i ; j < 5 * (i + 1); j++ ) {
+                    let participant = match_data["participants"][j]
+                    let championId = participant["championId"]
+                    let trim_participant = {
+                        teamId: participant["teamId"],
+                        win: participant["stats"]["win"],
+                        lane: participant["timeline"]["lane"],
+                        kills: participant["stats"]["kills"],
+                        deaths: participant["stats"]["deaths"],
+                        assists: participant["stats"]["assists"],
+                        firstBloodKill: participant["stats"]["firstBloodKill"],
+                        firstTowerKill: participant["stats"]["firstTowerKill"],
+                        visionScore: participant["stats"]["visionScore"],
+                        totalCS: participant["stats"]["totalMinionsKilled"] + participant["stats"]["neutralMinionsKilled"],
+                    }
+                    for (let ch in ch_data["data"]) {
+                        if (ch_data["data"][ch]["key"] == championId) {
+                            console.log(ch_data["data"][ch]["name"])
+                            trim_participant.champion = ch_data["data"][ch]["name"]
+                        }
+                    }
+                    participants_data.push(trim_participant)
+                }
+
+                trim_team.participants = participants_data
+
+                teamInfo.push(trim_team)
+            }
+
+            matchInfo = { matchId: matchId, teams: teamInfo}
+            res.status(201).send(matchInfo)
+        }).catch ((err) => {
+            console.log(err)
+        });
+    }).catch ((err) => {
+        console.log(err)
+    })
+
+})
+
 
 //listen
 app.listen(port, () => console.log(`listening on localhost on ${port}`))
