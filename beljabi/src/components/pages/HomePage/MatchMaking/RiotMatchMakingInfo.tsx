@@ -1,23 +1,9 @@
 import React from 'react';
 import { useSpring, animated } from 'react-spring'
 import './RiotMatchMakingInfo.css';
+import { RiotMatchMakingInfoProps, setMatchMaking } from "../../../../api/beljabi"
 
-import { Typography } from 'antd';
-
-type Summoner = {
-  _id: string,
-  tier: string,
-  elo: number,
-  summonerId: string,
-  accountId: string,
-  summonerName: string,
-}
-
-type RiotMatchMakingInfoProps = {
-  teams: Array<Array<Summoner>> | null;
-  elos: Array<Array<number>> | null;
-  wps: Array<Array<number>> | null;
-};
+import { Typography, Button, message } from 'antd';
 
 const { Title } = Typography;
 
@@ -53,6 +39,16 @@ function RiotMatchMakingInfo({ teams, elos, wps}: RiotMatchMakingInfoProps) {
       }
 
       return [localTier, localTierTrim, localTierImg]
+  }
+
+  const onFinish = () => {
+    let match = { teams: teams, elos: elos, wps: wps}
+    setMatchMaking(match).then( (res) => {
+      console.log(res)
+      message.success("current match setted.")
+    }).catch((err)=> {
+      message.error("current match failed.")
+    })
   }
 
   return (
@@ -106,6 +102,11 @@ function RiotMatchMakingInfo({ teams, elos, wps}: RiotMatchMakingInfoProps) {
             <Title level={3} style={{alignSelf:"center", margin: "50px"}}> TEAM Elo : {Math.round(elos[1])} </Title>
             <Title level={3} style={{alignSelf:"center", margin: "50px"}}> Win Persentage : {wps[1]} </Title>
           </div>
+          <Button
+            onClick={onFinish}
+          >
+            Submit
+          </Button>
         </div >
         </animated.div>
   </>

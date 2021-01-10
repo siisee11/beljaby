@@ -2,13 +2,15 @@ import React, {useState} from 'react';
 import RiotMatchMakingForm from './RiotMatchMakingForm';
 import RiotMatchMakingInfo from './RiotMatchMakingInfo';
 import "./RiotMatchMakingLoader.css"
+import { RiotMatchMakingInfoProps } from "../../../../api/beljabi"
 
 import axios from '../../../../axios'
 import { message, Spin } from 'antd';
 
 function RiotMatchMakingLoader() {
   const [ loading, setLoading ] = useState(false)
-  const [ teams, setTeams ] = useState(null)
+  const [ teams, setTeams ] = useState<RiotMatchMakingInfoProps>(null)
+
   const onSubmitMatchMaking = (summoners: object) => {
     setLoading(true)
     axios.post(`/get/matchmaking`, summoners).then((res) => {

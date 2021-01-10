@@ -5,6 +5,7 @@ import AddUser from "./AddUser/AddUserLoader"
 import RiotMatchLoader from "./Match/RiotMatchLoader"
 import RiotMatchMakingLoader from "./MatchMaking/RiotMatchMakingLoader"
 import MainPageLoader from './MainPage/MainPageLoader'
+import TottoLoader from "./Totto/TottoLoader"
 import MyRooms from './MyRooms/MyRooms';
 import { useSelector, useDispatch } from 'react-redux'
 import { setUserProfileNullThunk } from "../../../modules/google"
@@ -25,6 +26,7 @@ import {
   LogoutOutlined,
   DeploymentUnitOutlined,
   FireOutlined,
+  DollarCircleOutlined,
 } from '@ant-design/icons';
 
 const { Content, Header, Sider } = Layout;
@@ -86,18 +88,25 @@ function Home() {
                       Match
                     </Link>
                   </Menu.Item>
-                  <Menu.Item key="4" icon={<FireOutlined />}>
+                  <Menu.Item key="4" icon={<DollarCircleOutlined />}>
+                    <Link to='/totto' >
+                      Totto
+                    </Link>
+                  </Menu.Item>
+                  <Menu.Item key="5" icon={<FireOutlined />}>
                     <Link to='/matchmaking' >
                       Match Making
                     </Link>
                   </Menu.Item>
-                  <Menu.Item key="5" icon={<UserAddOutlined />}>
+                  <Menu.Item key="6" icon={<UserAddOutlined />}>
                     <Link to='/adduser' >
                       Add User
                     </Link>
                   </Menu.Item>
               </Menu>
               </Sider>
+
+
               <Layout>
                 <Layout className="site-layout">
                   <Header className="site-layout-background" style={{ padding: 0 }}>
@@ -143,6 +152,7 @@ function Home() {
                       <Route exact path={location.pathname} component={MainPageLoader} />
                       <Route exact path={`/user`} component={Users} />
                       <Route exact path={`/match`} component={RiotMatchLoader} />
+                      <Route exact path={`/totto`} component={TottoLoader} />
                       <Route exact path={`/matchmaking`} component={RiotMatchMakingLoader} />
                       <Route exact path={`/adduser`} component={AddUser} />
                       <Route exact path={`/My Rooms`} component={MyRooms} />  {/* 이거없으면깨짐왜?? */}

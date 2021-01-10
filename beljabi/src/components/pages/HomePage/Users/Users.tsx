@@ -11,12 +11,14 @@ type UserListItem = {
     gname: string,
     name: string,
     elo: number,
+    point: number,
 }
 
 const MainPage = () => {
     const { data } = useSelector((state: RootState) => state.beljabi.userProfile);
     const fade = useSpring({ from: { opacity: 0 }, opacity: 1 , delay: 200})
     const [ users, setUsers ] = useState(null)
+    const [ tottoRank, setTottoRank ] = useState(null)
     
     useEffect(() => {
         getUserList().then( (res) => {
@@ -24,24 +26,41 @@ const MainPage = () => {
                 return b.elo - a.elo
             })
             setUsers(res)
+
+            res.sort((a: UserListItem, b : UserListItem) => {
+                return b.point - a.point
+            })
+            setTottoRank(res)
         }) 
     }, [])
 
     return (
         <>
-        { data && users ? 
+        { data && users && tottoRank ? 
             (
                 <animated.div style={fade}>        
+                <div className="UserBoard">
                     <List
                         header={<div>SKKU RANK 👊🏼</div>}
                         bordered
                         dataSource={users}
                         renderItem={(item : UserListItem) => (
                             <List.Item>
-                            <Typography.Text strong>[{Math.round(item.elo)}]</Typography.Text> {item.name} - {item.gname}
+                            <Typography.Text strong>[{Math.round(item.elo)}]</Typography.Text> {item.name}
                             </List.Item>
                         )}
                     />
+                    <List
+                        header={<div>TOTTO RANK 💵</div>}
+                        bordered
+                        dataSource={tottoRank}
+                        renderItem={(item : UserListItem) => (
+                            <List.Item>
+                            <Typography.Text strong>[{Math.round(item.point)}]</Typography.Text> {item.name} 
+                            </List.Item>
+                        )}
+                    />
+                </div>
                 </animated.div>
             )  :  (
                 null

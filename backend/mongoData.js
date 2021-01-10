@@ -14,7 +14,8 @@ const userSchema = new mongoose.Schema({
     name: { type: String, required: true }, 
     summonerId : { type: String, required: true },
     summoner: {type : mongoose.Schema.Types.ObjectId, ref: 'Summoner'},
-    isAdmin: { type: Boolean, default: false},
+    isAdmin: { type: Boolean, default: false },
+    point: { type: Number, default: 10000 }
 });
 
 const matchSchema = new mongoose.Schema({
@@ -48,6 +49,44 @@ const matchSchema = new mongoose.Schema({
     timestamp: { type: Date, default: Date.now },
 });
 
+const tottoSchema = new mongoose.Schema({
+    currentGame: Boolean,
+    currentAvailable : { type: Boolean, default: true },
+    match : {
+        teams : [ 
+            [
+                {
+                    summonerId : { type: String, required: true, unique: true},
+                    summonerName : { type: String, required: true, unique: true}, 
+                    accountId : { type: String, required: true },
+                    tier: { type: String, default: "UNRANK"},
+                    elo: {type : Number, default: 1000},
+                    _id: {type : mongoose.Schema.Types.ObjectId, ref: 'Summoner'}
+                }
+            ] 
+        ],
+        elos : [ Number ],
+        wps : [ Number ],
+    },
+    tottos : [
+        {
+            title: String,
+            answer: String,
+            options: [
+                {
+                    value: String,
+                    participants : [ {
+                            point: Number,
+                            user: {type: mongoose.Schema.Types.ObjectId, ref: 'User'}
+                        }
+                    ],
+                }
+            ]
+        }
+    ],
+})
+
 export const User = mongoose.model('User', userSchema);
 export const Match = mongoose.model('Match', matchSchema);
 export const Summoner = mongoose.model('Summoner', summonerSchema);
+export const Totto = mongoose.model('Totto', tottoSchema);

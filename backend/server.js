@@ -2,7 +2,7 @@ import express from 'express'
 import mongoose from 'mongoose'
 import cors from 'cors'
 
-import { User, Match, Summoner } from './mongoData.js'
+import { User, Match, Summoner, Totto } from './mongoData.js'
 import axios from 'axios'
 
 // app config
@@ -51,6 +51,15 @@ app.get('/', (req, res) => {
         success: true,
     });
 });
+
+app.get('/updateUser', (req, res) => {
+    User.updateMany(
+        {},
+        { $set: {"point": 10000} },
+    ).exec().catch( (err) => {
+        console.log(err)
+    })
+})
 
 
 app.post('/new/user', (req, res) => {
@@ -106,9 +115,9 @@ app.post('/new/user', (req, res) => {
                     },
                 }).then( (res2) => {
                     res2.data.forEach(league => {
-                    if( league["queueType"] == "RANKED_SOLO_5x5") {
-                            tier = league["tier"]
-                    } 
+                        if( league["queueType"] == "RANKED_SOLO_5x5") {
+                                tier = league["tier"]
+                        } 
                     });
 
                     Summoner.create(
@@ -170,6 +179,194 @@ app.post('/new/match', async (req, res) => {
     })
 })
 
+app.post('/new/currentTotto', async (req, res) => {
+    const tottoData = req.body
+
+    Totto.updateOne({currentGame : true}, {$push : {tottos: { $each : tottoData.tottos }}}).exec().then((data)=> {
+        res.status(201).send(data)
+    }).catch(err => {
+        res.status(500).send(err)
+    })
+})
+
+app.post('/new/currentTotto/guess', async (req, res) => {
+    const tottoData = req.body
+    const title = tottoData.title
+    const value = tottoData.value
+    const participant = tottoData.participant
+    let option = {
+        value: value,
+    }
+
+    Totto.findOne(
+        { currentGame : true},
+    ).exec( (finderr, data) => {
+        if (finderr){
+            res.status(500).send(finderr)
+        }
+        if (data.currentAvailable) {
+            Totto.updateOne(
+                { currentGame: true },
+                { $push: {"tottos.$[i].options.$[j].participants" : participant }},
+                {
+                    arrayFilters: [
+                        { "i.title" : title },
+                        { "j.value" : value }
+                    ]
+                }
+            ).exec().then( data => {
+                if (data.nModified == 0) {
+                    /* create new option and insert participant */
+                    Totto.updateOne(
+                        { currentGame: true },
+                        { $push: {"tottos.$[i].options" : option} },
+                        {
+                            "upsert": true,
+                            "arrayFilters": [
+                                { "i.title" : title },
+                            ]
+                        }
+                    ).exec().then( () => {
+                        Totto.updateOne(
+                            { currentGame: true },
+                            { $push: {"tottos.$[i].options.$[j].participants" : participant }},
+                            {
+                                arrayFilters: [
+                                    { "i.title" : title },
+                                    { "j.value" : value }
+                                ]
+                            }
+                        ).exec().then( data1 => {
+                            res.status(201).send(data1)
+                        })
+                    }) 
+                } else {
+                    /* insert participant */
+                    res.status(201).send(data)
+                }
+            }).catch ((err) => {
+                /* No option found */
+                /* create new option and insert participant */
+                Totto.updateOne(
+                    { currentGame: true },
+                    { $push: {"tottos.$[i].options" : option} },
+                    {
+                        "upsert": true,
+                        "arrayFilters": [
+                            { "i.title" : title },
+                        ]
+                    }
+                ).exec().then( () => {
+                    Totto.updateOne(
+                        { currentGame: true },
+                        { $push: {"tottos.$[i].options.$[j].participants" : participant }},
+                        {
+                            arrayFilters: [
+                                { "i.title" : title },
+                                { "j.value" : value }
+                            ]
+                        }
+                    ).exec().then( data1 => {
+                        res.status(201).send(data1)
+                    })
+                })
+            }).catch ( (err1) => {
+                /* real error */
+                res.status(500).send(err1)
+            })
+        } else {
+            res.status(500).send({ err: "timeout"});
+        }
+    })
+})
+
+app.post('/new/currentTotto/result', async (req, res) => {
+    const answers = req.body.answers
+
+    let result = await Totto.findOne(
+        { currentGame: true }
+    ).exec( (err, data) => {
+        let tottos = data.tottos
+        let new_tottos = []
+        tottos.map( (totto, i) => {
+            totto.answer = answers[i].answer
+            new_tottos.push(totto) 
+        })
+        Totto.updateOne(
+            { currentGame: true},
+            { $set : {tottos: new_tottos}}
+        ).then( data => {
+            res.status(201).send(data)
+        }).catch (err => {
+            res.status(500).send(err)
+        })
+    })
+})
+
+app.post('/new/matchMaking', async (req, res) => {
+    const match = req.body
+    Totto.create({ currentGame: true, match: match }, (err, data) => {
+        if (err) {
+            res.status(500).send(err)
+        } else {
+            res.status(201).send(data)
+        }
+    })
+})
+
+app.post('/new/startMatch', async (req, res) => {
+    Totto.updateOne(
+        { currentGame: true },
+        { currentAvailable: false },
+    ).then((data) => {
+        res.status(201).send(data)
+    }).catch((e)=>{
+        res.status(500).send(e)
+    })
+})
+
+app.post('/new/finishMatch', async (req, res) => {
+    Totto.findOne(
+        { currentGame: true},
+    ).populate({ path: 'tottos.options.participants.user'}).exec((err, data) => {
+        let tottos = data.tottos
+        tottos.map((totto) => {
+            let answer = totto.answer
+            totto.options.map((option) => {
+                if (option.value === answer){
+                    /* Correct */
+                    option.participants.map((participant) => {
+                        User.updateOne(
+                            { _id : participant.user._id },
+                            { $inc: {point: participant.point }}
+                        ).catch( err => {
+                            console.log(err)
+                        })
+                    })
+                } else {
+                    /* Incorrect */
+                    option.participants.map((participant) => {
+                        User.updateOne(
+                            { _id : participant.user._id },
+                            { $inc: {point: -1 * participant.point }}
+                        ).catch( err => {
+                            console.log(err)
+                        })
+                    })
+                }
+            })
+        })
+    })
+
+    Totto.updateOne(
+        { currentGame: true },
+        { currentGame: false },
+    ).then((data) => {
+        res.status(201).send(data)
+    }).catch((e)=>{
+        res.status(500).send(e)
+    })
+})
 
 app.post('/new/summoners', (req, res) => {
     const summoners = req.body.player
@@ -332,6 +529,19 @@ app.get('/sync', async (req, res) => {
     res.status(200).send({success: true})
 });
 
+/*-----------------------------------GET-----------------------------*/
+
+app.get('/get/currentTotto', (req, res) => {
+    Totto.findOne({ currentGame : true }).exec((err,data) => {
+        console.log("totto", data)
+        if (err) {
+            res.status(500).send(err)
+        } else {
+            res.status(200).send(data)
+        }
+    })
+})
+
 app.get('/get/user', (req, res) => {
     const gmail = req.query.gmail
 
@@ -356,6 +566,7 @@ app.get('/get/userList', (req, res) => {
                     name: userData.name,
                     gname: userData.gname,
                     elo: userData.summoner.elo,
+                    point: userData.point,
                 }
 
                 users.push(userInfo)
@@ -416,7 +627,6 @@ app.post('/get/matchmaking', async (req, res) => {
     pair.sort((a,b) => {
         return b["elo"] - a["elo"]
     })
-    console.log("sorted pair", pair)
 
     let teamElo = [pair[0].elo, pair[1].elo]
     teams[0].push(pair[0])
