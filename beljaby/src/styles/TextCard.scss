@@ -1,0 +1,31 @@
+.TextCard {
+    padding: 20px 15px;
+    box-shadow: 0 4px 20px rgba(darken($mint, 15%), 0.22);
+    border-radius: 8px;
+    background: var(--backgroundSecondary);
+    width: 340px;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+
+    @include whenDark {
+        box-shadow: 0 4px 20px rgba(rgb(0, 0, 0), 0.5);
+    }
+
+    & + & {
+        margin-top: 10px;
+        margin-bottom: 20px;
+        margin-right: 20px;
+        margin-left: 20px;
+    }
+}
+
+.TextCard__Title {
+margin-top: 0;
+color: var(--foregroundSecondary);
+}
+
+.TextCard__Body {
+line-height: 1.4;
+color: var(--foregroundPrimary);
+}

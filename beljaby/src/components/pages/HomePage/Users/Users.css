@@ -1,0 +1,31 @@
+.mainpage__container {
+    padding: 10px 10px;
+    width: 100%;
+}
+
+.mainpage__statistic-card {
+    padding: 30px;
+  }
+
+.ant-card-body {
+    box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 7px 20px 0 rgba(0, 0, 0, 0.1);
+}
+
+.ant-list {
+    margin : 2rem !important;
+    font-size: unset !important;
+    width: 500px !important;
+}
+
+.ant-list * {
+    color: var(--foregroundPrimary)
+}
+
+.ant-list-item {
+    color: var(--foregroundPrimary) !important
+}
+
+.UserBoard {
+    display: flex;
+    flex-direction: row;
+}

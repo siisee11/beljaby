@@ -1,0 +1,60 @@
+.myroom__container {
+    color: #000;
+    padding: 10px 10px;
+    width: 100%;
+}
+
+.myroom__enroll {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 10px 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 7px 20px 0 rgba(0, 0, 0, 0.1);
+}
+
+.myroom__enroll>h1 {
+    padding-left: 10px;
+    padding-right: 10px;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.myroom__enroll>span {
+    width: 300px;
+    padding-right: 10px;
+    margin-right: 20px;
+}
+
+.myroom__enroll .ant-btn {
+    margin-bottom: 4px;
+    margin-left: 10px;
+}
+
+.myroom__enroll .ant-input {
+    margin-left: 10px;
+    margin-bottom: 4px;
+    width: 300px;
+}
+
+.ant-input-password {
+    margin-bottom: 4px;
+    font-size: 14px;
+}
+
+.myroom__card-container {
+    box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 7px 20px 0 rgba(0, 0, 0, 0.1);
+}
+
+.example {
+    text-align: center;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    padding: 30px 50px;
+    margin: 20px 0;
+}
+
+.darkBg {
+    color: #fff;
+    background-color: #100;
+}

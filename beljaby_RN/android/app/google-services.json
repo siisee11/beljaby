@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "171554853932",
+    "project_id": "beljabi-34d09",
+    "storage_bucket": "beljabi-34d09.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:171554853932:android:b9596f621bc2cc98f1ed89",
+        "android_client_info": {
+          "package_name": "com.beljaby_rn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "171554853932-6ni3e0vuj3t89csite9bvsnb9arp47ef.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.beljaby_rn",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "171554853932-lvn5oemb8h91aean120g99gth88m0u1f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD3PUtmWD-W4NO5SGA-AtMebedIw0jLuuc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "171554853932-lvn5oemb8h91aean120g99gth88m0u1f.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "171554853932-2sk9ojchu4vs741um87l9v2a1116ck6k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.beljaby-RN"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

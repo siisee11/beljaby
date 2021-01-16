@@ -1,0 +1,85 @@
+.ant-layout-sider-children {
+  background-color: var(--backgroundSecondary);
+}
+
+.sidebar__info {
+    flex: 1;
+}
+
+.sidebar__info>h2 {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 900;
+    margin-bottom: 5px;
+}
+
+.sidebar__info>h3 {
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 400;
+}
+
+.ant-menu-item {
+  color: #BB86FC;
+}
+
+.ant-menu.ant-menu-dark.ant-menu-root {
+  background-color: var(--backgroundSecondary);
+}
+
+.home__body{
+  display: flex;
+  background-color: #fff;
+  width: 100%;
+  height: 100vh;
+}
+
+.trigger {
+  font-size: 20px;
+  line-height: 64px;
+  padding: 0 24px;
+  cursor: pointer;
+  color: #BB86FC;
+  transition: color 0.3s;
+}
+
+.trigger:hover {
+  color: #1890ff;
+}
+
+
+.logout {
+  font-size: 20px;
+  line-height: 64px;
+  padding: 0 24px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.logo {
+  height: 32px;
+  margin: 16px;
+  text-align: center;
+}
+
+.collapsed {
+  width: 45px;
+}
+
+.anticon {
+  color: var(--foregroundSecondary)
+}
+
+.ant-layout {
+  background: var(--backgroundPrimary);
+}
+
+.site-layout-header .site-layout-background {
+  background: var(--backgroundSecondary);
+}
+
+.site-layout .site-layout-background {
+  background: var(--backgroundSecondary);
+}

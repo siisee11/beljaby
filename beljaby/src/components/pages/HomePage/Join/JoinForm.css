@@ -1,0 +1,35 @@
+.JoinForm {
+  margin-bottom: 0px;
+  margin-top: 30px;
+}
+
+.JoinForm button {
+  background: var(--foregroundSecondary);
+  color: var(--backgroundSecondary);
+  cursor: pointer;
+  outline: none;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  padding: 0.5rem;
+  text-align: center;
+  font-weight: bold;
+  height: unset;
+  width: 100px;
+}
+
+.login__spinner {
+  text-align: center;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  padding: 30px 50px;
+  margin: 20px 0;
+}
+
+.JoinForm button:hover {
+  background: #495057;
+}
+
+.ant-form-item-label > label {
+  color: var(--foregroundPrimary) !important
+}

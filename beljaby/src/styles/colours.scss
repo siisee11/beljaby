@@ -1,0 +1,22 @@
+$mint: #14ad8c;
+$mintLight: #dcf7f4;
+$gray0: #f8f9fa;
+$gray7: #495057;
+$gray8: #343a40;
+$gray9: #121212;
+$gray10: #0c0c0c;
+$royalPurple: #52388f;
+$white: #fff;
+
+body {
+  --foregroundPrimary: #{$gray9};
+  --foregroundSecondary: #{$mint};
+  --backgroundPrimary: #{$gray0};
+  --backgroundSecondary: #{$white};
+  @include whenDark {
+    --foregroundPrimary: #{$gray0};
+    --foregroundSecondary: #{$mint};
+    --backgroundPrimary: #{$gray10};
+    --backgroundSecondary: #{$gray9};  
+  }
+}
