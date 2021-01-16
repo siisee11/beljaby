@@ -23,3 +23,7 @@ yarn-debug.log*
 yarn-error.log*
 
 #secrets.js
+
+# other files
+.eslintcache
+package-lock.json
