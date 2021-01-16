@@ -1,18 +1,20 @@
 import React, { useEffect, useState } from 'react';
+import { TextField } from '@material-ui/core';
 import './RiotMatchMakingForm.css';
-import { Form, Button, Select } from 'antd';
+import { Form, Button, Select, AutoComplete } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/lib/form';
 
-import { getSummonerList} from '../../../../api/beljabi'
+import AutoCompleteTextInput from '../../../common/AutoCompleteTextInput/AutoCompleteTextInput';
+import { getSummonerList } from '../../../../api/beljabi';
 
 type RiotMatchMakingFormProps = {
   onSubmitMatchMaking: (match: object) => void;
 };
 
 type UserListItem = {
-    summonerId: string,
-    summonerName: string,
+  summonerId: string,
+  summonerName: string,
 }
 
 const { Option } = Select;
@@ -38,24 +40,26 @@ const formItemLayoutWithOutLabel = {
 function RiotMatchMakingForm({ onSubmitMatchMaking }: RiotMatchMakingFormProps) {
   const [form] = Form.useForm();
   const formRef = React.createRef<FormInstance>();
-  const [ users, setUsers ] = useState(null)
-  
+  const [users, setUsers] = useState(null)
+
   useEffect(() => {
-      getSummonerList().then( (res) => {
-        var summonerNameList = [];
-        res.forEach((u : UserListItem) => {
-          summonerNameList.push(u.summonerName)
-        })
-        setUsers(summonerNameList)
-      }) 
+    getSummonerList().then((res) => {
+      var summonerNameList = [];
+      res.forEach((u: UserListItem) => {
+        summonerNameList.push(u.summonerName)
+      })
+      setUsers(summonerNameList)
+    })
   }, [])
 
 
   const onFinish = (values: object) => {
     console.log('Received values of form:', values);
-    onSubmitMatchMaking(values);
+    // onSubmitMatchMaking(values);
   };
- 
+
+  console.log(users);
+
   return (
     <Form ref={formRef} form={form} name="dynamic_form_item" {...formItemLayoutWithOutLabel} onFinish={onFinish}>
       <Form.List
@@ -91,13 +95,21 @@ function RiotMatchMakingForm({ onSubmitMatchMaking }: RiotMatchMakingFormProps) 
                   ]}
                   noStyle
                 >
-                  <Select style={{ width: 130 }}>
+                  <AutoComplete
+                    style={{ width: 130 }}
+                    options={users}
+                    placeholder="User Name"
+                    filterOption={(inputValue, option) =>
+                      option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
+                    }
+                  />
+                  {/* <Select style={{ width: 130 }}>
                     {users && (users).map((item: string) => (
                       <Option key={item} value={item}>
                         {item}
                       </Option>
                     ))}
-                  </Select>
+                  </Select> */}
                 </Form.Item>
                 {fields.length > 1 ? (
                   <MinusCircleOutlined
@@ -116,7 +128,7 @@ function RiotMatchMakingForm({ onSubmitMatchMaking }: RiotMatchMakingFormProps) 
                     style={{ width: '60%' }}
                     icon={<PlusOutlined />}
                   >
-                    Add Summoner 
+                    Add Summoner
                   </Button>
                   <Form.ErrorList errors={errors} />
                 </Form.Item>

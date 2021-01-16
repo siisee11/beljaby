@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import './RiotMatchInfoForm.css';
 import { getSummonerList } from '../../../../api/beljabi'
 import { MatchInfo } from "./RiotMatchLoader"
-import { Typography, Input, Button } from 'antd';
+import { Typography, Input, Button, AutoComplete } from 'antd';
 
 const { Title } = Typography;
 
 type UserListItem = {
-    summonerId: string,
-    summonerName: string,
+  summonerId: string,
+  summonerName: string,
 }
 
 type RiotMatchInfoFormProps = {
@@ -17,35 +17,36 @@ type RiotMatchInfoFormProps = {
 };
 
 function RiotMatchInfoForm({ onSubmitMatch, matchInfo }: RiotMatchInfoFormProps) {
-//  const [ users, setUsers ] = useState([])
-  const [values, setValues] = useState({})
-  
+  const [users, setUsers] = useState([])
+  // const [values, setValues] = useState([])
+  const selectedUsers = Array(10).fill('');
+
   useEffect(() => {
-      getSummonerList().then( (res) => {
-        var summonerNameList = [];
-        res.forEach((u : UserListItem) => {
-          summonerNameList.push({ value: u.summonerName })
-        })
-        setUsers(summonerNameList)
-      }) 
+    getSummonerList().then((res) => {
+      var summonerNameList = [];
+      res.forEach((u: UserListItem) => {
+        summonerNameList.push({ value: u.summonerName })
+      })
+      setUsers(summonerNameList)
+    })
   }, [])
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setValues({
-        ...values,
-        [name]: value
-    })
-  }
+  // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { name, value } = e.target
+  //   setValues({
+  //     ...values,
+  //     [name]: value
+  //   })
+  // }
 
   const onFinish = () => {
-    console.log('Received values of form:', values);
-    for (let i = 0; i < 10 ; i++ ) {
-      let teamNo = ( i < 5 ? 0 : 1)
-      let name = values[`name-${i}`]
+    console.log('Received values of form:', selectedUsers);
+    for (let i = 0; i < 10; i++) {
+      let teamNo = (i < 5 ? 0 : 1)
+      let name = selectedUsers[i];
       matchInfo["teams"][teamNo]["participants"][i - teamNo * 5].name = name
     }
-//    console.log(matchInfo)
+    console.log(matchInfo)
     onSubmitMatch(matchInfo);
   };
 
@@ -56,41 +57,35 @@ function RiotMatchInfoForm({ onSubmitMatch, matchInfo }: RiotMatchInfoFormProps)
         matchInfo["teams"].map((team, i) => {
           return (
             <div className="Team">
-            <Title level={3}>{team["win"] === "Win" ? "Win" : "Defeat" }</Title>
-            <Title level={5}>
-              Baron: {team["baronKills"]} / Dragon: {team["dragonKills"]} / Tower: {team["towerKills"]}
-            </Title>
-            {
-              team["participants"].map((participant, j) => {
-                return(
-                <div className="participant">
-                  <Input
-                    id='testName'
-                    type="text" 
-                    name={`name-${5*i + j}`}
-                    style={{ width: 200, margin:"10px" }}
-                    placeholder="Summoner"
-                    onChange={handleChange}
-                  />
-                  {/*
+              <Title level={3}>{team["win"] === "Win" ? "Win" : "Defeat"}</Title>
+              <Title level={5}>
+                Baron: {team["baronKills"]} / Dragon: {team["dragonKills"]} / Tower: {team["towerKills"]}
+              </Title>
+              {
+                team["participants"].map((participant, j) => {
+                  const selectedUserIndex = i * 5 + j;
+                  return (
+                    <div className="participant">
                       <AutoComplete
-                        style={{ width: 200, margin:"10px" }}
+                        style={{ width: 200, margin: "10px" }}
                         options={users}
                         placeholder="summoner"
-                        onChange={onChange}
+                        onSelect={(selected, option) => {
+                          selectedUsers[selectedUserIndex] = selected;
+                        }}
                         filterOption={(inputValue, option) =>
                           option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
                         }
                       />
-                  */}
-                  <Title level={5} style={{alignSelf: "center"}}>
-                    {participant.champion} - {participant.lane} - 
+
+                      <Title level={5} style={{ alignSelf: "center" }}>
+                        {participant.champion} - {participant.lane} -
                     ({participant.kills} / {participant.deaths} / {participant.assists} / {participant.totalCS})
                   </Title>
-                </div>
-                )
-              })
-            }
+                    </div>
+                  )
+                })
+              }
             </div>
           )
         })
