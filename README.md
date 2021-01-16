@@ -52,13 +52,20 @@ $ cd beljaby
 $ npm i
 $ npm start
 ```
+* 웹 프론트엔드 구동을 위해서 Firebase와 Riot API key가 필요하다.
+[Riot Developer](https://developer.riotgames.com/)와 [Firebase](https://firebase.google.com/)에서 API를 발급받아 사용할 수 있다.
+아니면 저에게 카톡주세요.
+발급 받은 API Key는 beljaby/ 폴더 밑에 .env파일을 만들어 아래와 같은 형식으로 작성한다.
+```
+REACT_APP_RIOT_API_KEY=<riot api key>
+REACT_APP_FIREBASE_API_KEY=<firebase api key>
+```
 
 * Ubuntu 18.04 기준으로, user_watch_max 제한으로 인해 error가 발생할 수 있는데, 이를 해결하기 위해 updateUserWatches.sh을 실행시키면 된다.
 ```bash
 $ chmode +x updateUserWatches.sh
 $ ./updateUserWatches.sh
 ```
-
 
 ### 웹 Deploy 방법
 netlify를 통해 이 레파지토리의 master branch를 호스팅하고 있다. (beljaby/build/ 폴더)
@@ -77,4 +84,10 @@ $ git push heroku master
 콘솔 로그를 보고 싶으면 아래 커맨드를 이용한다.
 ```
 $ heroku logs -t
+```
+
+* 백엔드 역시 API key를 입력해줘야되는데 웹과 같은 방식으로 .env파일을 만들어서 관리한다. (backend/.env)
+```
+MONGO_URL=<mongo db url>
+RIOT_API=<riot api key>
 ```
