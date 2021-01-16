@@ -46,8 +46,9 @@ Node.js 12.10.0 이상의 버전을 설치해야한다. 웹의 경우, 리엑트
 ### 웹 실행 방법
 git clone을 통해 레파지토리를 내려받는다. 웹 폴더 (beljaby/)로 이동해 모듈들을 설치하고 실행한다.
 
-```
+```bash
 $ git clone https://github.com/siisee11/beljaby
+$ cd beljaby
 $ npm i
 $ npm start
 ```
