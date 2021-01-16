@@ -53,6 +53,13 @@ $ npm i
 $ npm start
 ```
 
+* Ubuntu 18.04 기준으로, user_watch_max 제한으로 인해 error가 발생할 수 있는데, 이를 해결하기 위해 updateUserWatches.sh을 실행시키면 된다.
+```bash
+$ chmode +x updateUserWatches.sh
+$ ./updateUserWatches.sh
+```
+
+
 ### 웹 Deploy 방법
 netlify를 통해 이 레파지토리의 master branch를 호스팅하고 있다. (beljaby/build/ 폴더)
 master branch에 push하면 자동으로 build가 진행된다.
