@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { TextField } from '@material-ui/core';
 import './RiotMatchMakingForm.css';
 import { Form, Button, Select, AutoComplete } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/lib/form';
 
-import AutoCompleteTextInput from '../../../common/AutoCompleteTextInput/AutoCompleteTextInput';
 import { getSummonerList } from '../../../../api/beljabi';
 
 type RiotMatchMakingFormProps = {
@@ -17,7 +15,7 @@ type UserListItem = {
   summonerName: string,
 }
 
-const { Option } = Select;
+// const { Option } = Select;
 
 const formItemLayout = {
   labelCol: {
@@ -40,7 +38,7 @@ const formItemLayoutWithOutLabel = {
 function RiotMatchMakingForm({ onSubmitMatchMaking }: RiotMatchMakingFormProps) {
   const [form] = Form.useForm();
   const formRef = React.createRef<FormInstance>();
-  const [users, setUsers] = useState(null)
+  const [users, setUsers] = useState([])
 
   useEffect(() => {
     getSummonerList().then((res) => {
@@ -55,7 +53,7 @@ function RiotMatchMakingForm({ onSubmitMatchMaking }: RiotMatchMakingFormProps) 
 
   const onFinish = (values: object) => {
     console.log('Received values of form:', values);
-    // onSubmitMatchMaking(values);
+    onSubmitMatchMaking(values);
   };
 
   console.log(users);
@@ -97,7 +95,9 @@ function RiotMatchMakingForm({ onSubmitMatchMaking }: RiotMatchMakingFormProps) 
                 >
                   <AutoComplete
                     style={{ width: 130 }}
-                    options={users}
+                    options={users ? users.map((value: string, index: number) => {
+                      return { 'value': value };
+                    }) : null}
                     placeholder="User Name"
                     filterOption={(inputValue, option) =>
                       option!.value.toUpperCase().indexOf(inputValue.toUpperCase()) !== -1
