@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import './RiotMatchMakingForm.css';
-import { Form, Button, Select, AutoComplete } from 'antd';
+import { Form, Button, AutoComplete } from 'antd';
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { FormInstance } from 'antd/lib/form';
 
