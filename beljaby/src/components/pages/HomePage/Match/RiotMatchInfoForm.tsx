@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './RiotMatchInfoForm.css';
 import { getSummonerList } from '../../../../api/beljabi'
 import { MatchInfo } from "./RiotMatchLoader"
-import { Typography, Input, Button, AutoComplete } from 'antd';
+import { Typography, Button, AutoComplete } from 'antd';
 
 const { Title } = Typography;
 
