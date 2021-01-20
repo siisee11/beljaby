@@ -38,7 +38,7 @@ const { Content, Header, Sider } = Layout;
 function Home() {
   const { data } = useSelector((state: RootState) => state.beljabi.userProfile);
   const dark = useSelector((state: RootState) => state.dark.dark);
-  const [ collapsed, setCollapsed ] = useState<boolean>(true)
+  const [ collapsed, setCollapsed ] = useState<boolean>(false)
   const location = useLocation();
   const dispatch = useDispatch();
 

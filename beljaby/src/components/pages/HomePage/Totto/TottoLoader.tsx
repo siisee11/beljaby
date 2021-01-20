@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { useSelector } from "react-redux"
 import { useSpring, animated } from 'react-spring'
-import { getCurrentTotto, setCurrentTotto, setCurrentTottoGuess, setCurrentTottoResult, startMatch, finishMatch, Totto } from "../../../../api/beljabi"
+import { getCurrentTotto, changeJoin, setCurrentTotto, setCurrentTottoGuess, setCurrentTottoResult, startMatch, finishMatch, Totto } from "../../../../api/beljabi"
 import CurrentMatchInfo from "./CurrentMatchInfo"
 import TottoInfo from "./TottoInfo"
 import TottoForm from "./TottoForm"
@@ -76,6 +76,14 @@ const TottoLoader = () => {
        }); 
     }
 
+    const onReroll = () => {
+       changeJoin().then(()=>{
+            message.success('Match Changed.')
+       }).catch(()=>{
+           message.error('Failed')
+       }); 
+    }
+
     /* If userProfile available, get summoner info */
     useEffect(() => {
         /* /get/currentTotto */
@@ -91,6 +99,11 @@ const TottoLoader = () => {
             /* Why call this several times?? */
             getCurrentTottoInfo()
         });
+
+        return () => {
+            channel.unbind('newTotto')
+            channel.unbind('updateTotto')
+        }
     }, [getCurrentTottoInfo])
 
     return (
@@ -106,6 +119,7 @@ const TottoLoader = () => {
             { data.isAdmin &&  <TottoForm onSubmitTotto={onSubmitTotto}/> }
             { data.isAdmin && (
                 <div style={{display:"flex", flexDirection:"row"}}>
+                    <Button onClick={onReroll}>Reroll match</Button>
                     <Button onClick={onStartMatch}>Start match</Button>
                     <Button onClick={onFinishMatch}>Finish match</Button>
                 </div>

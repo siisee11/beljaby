@@ -4,9 +4,10 @@ import { useSpring, animated } from 'react-spring'
 
 type ProfileInfoProps = {
   summoner: Summoner,
+  splash: string,
 };
 
-const MainPage = ({ summoner }: ProfileInfoProps) => {
+const MainPage = ({ summoner, splash }: ProfileInfoProps) => {
     const [ localInfo, setLocalInfo ] = useState<string[]>([])
     const fade = useSpring({ from: { opacity: 0 }, opacity: 1 , delay: 200})
 
@@ -52,12 +53,18 @@ const MainPage = ({ summoner }: ProfileInfoProps) => {
         {
             localInfo ? (
                 <animated.div style={fade}>        
-                    <div className='mainpage__container'>
+
+                    <div className='mainpage__container' id="parent">
+                        <img
+                            src={splash}
+                            alt="champion"
+                            id='splash'
+                            />
                         <div className='mainpage__profile'>
                             <img src={localInfo[2]} alt="base"
-                                style={{width:"80px", margin:"0px 0px -35px", zIndex:2}} 
+                                style={{width:"80px", margin:"0px 0px -35px", zIndex:3}} 
                             />
-                            <div className="TextCard">
+                            <div className="TextCard" style={{zIndex:2}}>
                                 <h2 className="TextCard__Title">{summoner.summonerName}</h2>
                                 <p className="TextCard__Body">
                                     Solo rank Tier: {summoner.tier}
@@ -70,7 +77,7 @@ const MainPage = ({ summoner }: ProfileInfoProps) => {
                                 </p>
                             </div>
                             <img src={localInfo[1]} alt="trim"
-                                style={{width:"350px", margin:"-105px 0 0 0"}} 
+                                style={{width:"350px", margin:"-105px 0 0 0", zIndex:2}} 
                             />
                         </div>
                     </div>

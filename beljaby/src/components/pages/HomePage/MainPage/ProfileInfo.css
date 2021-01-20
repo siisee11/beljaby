@@ -6,6 +6,7 @@
 .mainpage__profile {
     display: grid;
     place-items: center;
+    z-index: 2;
 }
 
 .mainpage__statistic-card {
@@ -14,4 +15,34 @@
 
 .ant-card-body {
     box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 7px 20px 0 rgba(0, 0, 0, 0.1);
+}
+
+.splash-overlay {
+    position: absolute;
+    z-index: 0;
+    left: 0;
+    top: 0;
+    min-width: 100%;
+    background-color: rgba(0,0,0,.5);
+    z-index: 1;
+}
+
+#parent {
+    position: relative;
+}
+
+#splash {
+    position: absolute;
+    z-index: 0;
+    left: 0;
+    top: 0;
+    object-fit: cover;
+    object-position: 100% 0;
+    opacity: 0.5;
+    margin: -24px;
+    width:calc(100% + 50px);
+    min-width: 100%;
+    height: 1200px; 
+    -webkit-mask-image:-webkit-gradient(linear, left top, left bottom, from(rgb(0, 0, 0)), to(rgba(0, 0, 0, 0)));
+    mask-image: linear-gradient(to bottom, rgb(0, 0, 0), rgba(0, 0, 0, 0));
 }

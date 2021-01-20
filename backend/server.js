@@ -60,6 +60,18 @@ mongoose.connection.once('open', () => {
         }
     })
 
+    const UserChangeStream = User.watch()
+    UserChangeStream.on('change', (change) => {
+        if (change.operationType === 'update') {
+            pusher.trigger('user-channel', 'updateUser', {
+                'change':change
+            })
+        } else if (change.operationType === 'delete') {
+            console.log('Delete User')
+        } else {
+            console.log('Error triggering Pusher')
+        }
+    })
 })
 
 //api routes
@@ -78,6 +90,14 @@ app.get('/updateUser', (req, res) => {
     })
 })
 
+app.get('/updateSummoner', (req, res) => {
+    Summoner.updateMany(
+        {},
+        { $set: {"champion": "Singed"} },
+    ).exec().catch( (err) => {
+        console.log(err)
+    })
+})
 
 app.post('/new/user', (req, res) => {
     const userData = req.body
@@ -187,13 +207,57 @@ app.post('/new/match', async (req, res) => {
         newTeams.push(team)
     }))
 
-    Match.create({ ...matchData, teams: newTeams }, (err, data) => {
-        if (err) {
-            res.status(500).send(err)
-        } else {
-            res.status(201).send(data)
-        }
-    })
+    await Match.create({ ...matchData, teams: newTeams })
+
+    /* Update elo */
+    let m = await Match.findOne(
+        {}, {}, { sort: { _id : -1 }}
+    ).populate({ path: 'teams.participants.summoner'}).exec()
+    var elos = [0 , 0]
+    var kills = [0 , 0]
+
+    await Promise.all(m.teams.map( async (team) => {
+        var teamId = (team.win == "Win" ? 0 : 1)
+        await Promise.all(team.participants.map ( async (participant) => {
+            elos[teamId] += participant.summoner.elo
+            kills[teamId] += participant.kills
+        }));
+    }))
+
+    var expectedWinRates = [0, 0]
+    expectedWinRates[0] = 1 / ( 1 + Math.pow(10, (elos[1] - elos[0])/400))
+    expectedWinRates[1] = 1 / ( 1 + Math.pow(10, (elos[0] - elos[1])/400))
+
+    var deltas = [0, 0]
+    deltas[0] = 50 * (1 - expectedWinRates[0]) 
+    deltas[1] = 50 * (0 - expectedWinRates[1]) 
+
+    await Promise.all(m.teams.map( async (team) => {
+        await Promise.all(team.participants.map ( async (participant) => {
+            var contribution = 0;
+            var gain = 0;
+            if ( participant.win == "true"){
+                contribution = 0.3
+                     + ((participant.kills + participant.assists) / kills[0])
+                     + 0.001 * participant.totalCS
+                     - (participant.deaths * 0.015)
+                gain = deltas[0]
+            } else {
+                contribution = 1.2
+                    - ((participant.kills + participant.assists) / kills[1])
+                    - 0.001 * participant.totalCS
+                    + 0.015 * participant.deaths
+                gain = deltas[1]
+            }
+            var newElo = participant.summoner.elo + gain * contribution
+            console.log(participant.name, gain* contribution)
+
+            await Summoner.updateOne({summonerName: participant.name }, {elo: newElo});
+        }))
+    }))
+
+    console.log("Elo updated")
+    res.status(200).send({success: true})
 })
 
 app.post('/new/currentTotto', async (req, res) => {
@@ -325,7 +389,7 @@ app.post('/new/join', async (req, res) => {
     console.log(summoner, "Joined.")
     let ret = await Join.updateOne(
         { currentGame: true },
-        { $addToSet: {summoners : summoner}},
+        { $push: {summoners : summoner}},
         { upsert: true }
     ).exec()
 
@@ -344,6 +408,8 @@ app.post('/new/join', async (req, res) => {
         { currentGame: true}
     ).populate('summoners').then( async (data) => {
         const summoners = data.summoners
+
+        /* if 10 summoner joined */
         if (summoners.length == 10) {
             let teams = new Array(2)
             for (let i = 0 ; i < teams.length; i++) {
@@ -380,13 +446,7 @@ app.post('/new/join', async (req, res) => {
                     res.status(500).send(err)
                 } else {
                     /* Delete Join */
-                    Join.deleteOne({ currentGame: true }).exec((err, data) => {
-                        if (err) {
-                            res.status(500).send(err)
-                        } else {
-                            res.status(201).send(data)
-                        }
-                    }) 
+                    res.status(201).send(data)
                 }
             })
        } else {
@@ -395,6 +455,94 @@ app.post('/new/join', async (req, res) => {
        }
    })
 })
+
+app.post('/new/join/change', async (req, res) => {
+    Join.findOne(
+        { currentGame: true}
+    ).populate('summoners').then( async (data) => {
+        const summoners = data.summoners
+
+        /* if 10 summoner joined */
+        if (summoners.length == 10) {
+            /* get summoner info from Summoner collection */
+            let pair = summoners
+
+            let averageElo = pair.reduce(function add(sum, currValue) {
+                                return sum + currValue.elo;
+                            }, 0);
+            averageElo /= 2;
+
+            console.log("team average elo", averageElo)
+
+            function combination(source, target, n, r, count) { 
+                if(r === 0) {
+                    let sum = target.reduce(function add(sum, currValue) {
+                        return sum + currValue.elo;
+                    }, 0);
+                    if (sum > averageElo - 50 && sum < averageElo + 50)
+                        final.push(target);
+                }
+                else if(n === 0 || n < r) return; 
+                else { 
+                    target.push(source[count]); 
+                    combination(source, Object.assign([], target), n - 1, r - 1, count + 1); 
+                    target.pop(); 
+                    combination(source, Object.assign([], target), n - 1, r, count + 1); 
+                } 
+            } 
+            
+            const final = [];  /* this array contains combination of summoners */
+            combination(pair, [], 10, 5, 0); 
+
+            if (final.length == 0) {
+                res.status(500).send({err: "no possible match"})
+                return
+            }
+            console.log(final[0])
+
+            let teams = []
+            let teamElo = []
+            let randomTeam = final[Math.floor(Math.random() * final.length)];
+            randomTeam.sort((a,b) => {
+                return b["elo"] - a["elo"]
+            })
+            console.log("randomTeam", randomTeam)
+            let oppsite = pair.filter(x => !randomTeam.includes(x))
+            oppsite.sort((a,b) => {
+                return b["elo"] - a["elo"]
+            })
+            console.log("opposite", oppsite)
+            teams.push(randomTeam)
+            teams.push(oppsite);
+            teamElo.push(randomTeam.reduce(function add(sum, currValue) {
+                return sum + currValue.elo;
+            }, 0));
+            teamElo.push(oppsite.reduce(function add(sum, currValue) {
+                return sum + currValue.elo;
+            }, 0));
+
+            let wps = []
+            wps.push(100 * (1 / (1 + Math.pow(10, (teamElo[1]/5 - teamElo[0]/5)/400))))
+            wps.push(100 * (1 / (1 + Math.pow(10, (teamElo[0]/5 - teamElo[1]/5)/400))))
+
+            console.log(teams, teamElo, wps)
+            let match = { teams: teams, elos: teamElo, wps: wps}
+
+            Totto.updateOne({ currentGame: true}, { $set : { match: match }}, (err, data) => {
+                if (err) {
+                    res.status(500).send(err)
+                } else {
+                    /* Delete Join */
+                    res.status(201).send(data)
+                }
+            })
+       } else {
+           /* not yet */
+            res.status(200).send()
+       }
+   })
+})
+
 
 app.post('/new/matchMaking', async (req, res) => {
     const match = req.body
@@ -422,33 +570,35 @@ app.post('/new/finishMatch', async (req, res) => {
     Totto.findOne(
         { currentGame: true},
     ).populate({ path: 'tottos.options.participants.user'}).exec((err, data) => {
-        let tottos = data.tottos
-        tottos.map((totto) => {
-            let answer = totto.answer
-            totto.options.map((option) => {
-                if (option.value === answer){
-                    /* Correct */
-                    option.participants.map((participant) => {
-                        User.updateOne(
-                            { _id : participant.user._id },
-                            { $inc: {point: participant.point }}
-                        ).catch( err => {
-                            console.log(err)
+        if (data.tottos) {
+            let tottos = data.tottos
+            tottos.map((totto) => {
+                let answer = totto.answer
+                totto.options.map((option) => {
+                    if (option.value === answer){
+                        /* Correct */
+                        option.participants.map((participant) => {
+                            User.updateOne(
+                                { _id : participant.user._id },
+                                { $inc: {point: participant.point }}
+                            ).catch( err => {
+                                console.log(err)
+                            })
                         })
-                    })
-                } else {
-                    /* Incorrect */
-                    option.participants.map((participant) => {
-                        User.updateOne(
-                            { _id : participant.user._id },
-                            { $inc: {point: -1 * participant.point }}
-                        ).catch( err => {
-                            console.log(err)
+                    } else {
+                        /* Incorrect */
+                        option.participants.map((participant) => {
+                            User.updateOne(
+                                { _id : participant.user._id },
+                                { $inc: {point: -1 * participant.point }}
+                            ).catch( err => {
+                                console.log(err)
+                            })
                         })
-                    })
-                }
+                    }
+                })
             })
-        })
+        }
     })
 
     Totto.updateOne(
@@ -559,6 +709,10 @@ app.get('/sync', async (req, res) => {
             elo = 1000
         }
 
+        /* 벨하사 예외 처리 */
+        if (summoner.summonerName == "벨코즈하는사람")
+            elo = 1800
+
         await Summoner.updateOne({summonerId: summoner.summonerId}, {elo: elo})
     }))
 
@@ -591,21 +745,28 @@ app.get('/sync', async (req, res) => {
         var deltas = [0, 0]
         deltas[0] = 50 * (1 - expectedWinRates[0]) 
         deltas[1] = 50 * (0 - expectedWinRates[1]) 
-//        console.log("winR", deltas[0], "defeatR", deltas[1])
+        console.log("winR", deltas[0], "defeatR", deltas[1])
 
         await Promise.all(m.teams.map( async (team) => {
             await Promise.all(team.participants.map ( async (participant) => {
                 var contribution = 0;
                 var gain = 0;
+
                 if ( participant.win == "true"){
-                    contribution = 0.3 + ((participant.kills + participant.assists) / kills[0])
+                    contribution = 0.3
+                        + ((participant.kills + participant.assists) / kills[0])
+                        + 0.001 * participant.totalCS
+                        - (participant.deaths * 0.015)
                     gain = deltas[0]
                 } else {
-                    contribution = 1.2 - ((participant.kills + participant.assists) / kills[1])
+                    contribution = 1.2
+                        - ((participant.kills + participant.assists) / kills[1])
+                        - 0.001 * participant.totalCS
+                        + 0.015 * participant.deaths
                     gain = deltas[1]
                 }
-                var newElo = participant.summoner.elo + gain * contribution - (participant.deaths * 0.5) + 0.02 * participant.totalCS
-//                console.log(participant.name, gain* contribution- (participant.deaths * 0.5) + 0.02 * participant.totalCS )
+                var newElo = participant.summoner.elo + gain * contribution
+                console.log(participant.name, gain* contribution)
 
                 await Summoner.updateOne({summonerName: participant.name }, {elo: newElo});
             }))
@@ -709,33 +870,69 @@ app.get('/get/summonerList', (req, res) => {
 
 app.post('/get/matchmaking', async (req, res) => {
     const summoners = req.body.names
-    let teams = new Array(2)
-    for (let i = 0 ; i < teams.length; i++) {
-        teams[i] = []
-    }
-    let pair = []
 
+    /* get summoner info from Summoner collection */
+    let pair = []
+    let eloPair = []
     await Promise.all(summoners.map( async (summoner) => {
         let result = await Summoner.findOne({ summonerName: summoner}).exec()
         pair.push(result)
+        eloPair.push(result.elo)
     }))
 
-    pair.sort((a,b) => {
+    let averageElo = eloPair.reduce(function add(sum, currValue) {
+                        return sum + currValue;
+                    }, 0);
+    averageElo /= 2;
+    console.log("team average elo", averageElo)
+
+    function combination(source, target, n, r, count) { 
+        if(r === 0) {
+            let sum = target.reduce(function add(sum, currValue) {
+                return sum + currValue.elo;
+            }, 0);
+            if (sum > averageElo - 50 && sum < averageElo + 50)
+                final.push(target);
+        }
+        else if(n === 0 || n < r) return; 
+        else { 
+            target.push(source[count]); 
+            combination(source, Object.assign([], target), n - 1, r - 1, count + 1); 
+            target.pop(); 
+            combination(source, Object.assign([], target), n - 1, r, count + 1); 
+        } 
+    } 
+    
+    const final = [];  /* this array contains combination of summoners */
+    combination(pair, [], 10, 5, 0); 
+//    console.log(final[0])
+
+    let teams = []
+    let teamElo = []
+    let randomTeam = final[Math.floor(Math.random() * final.length)];
+    randomTeam.sort((a,b) => {
         return b["elo"] - a["elo"]
     })
-
-    let teamElo = [pair[0].elo, pair[1].elo]
-    teams[0].push(pair[0])
-    teams[1].push(pair[1])
-    for ( let i = 2 ; i < pair.length; i++ ){
-        let turn = teamElo[0] - teamElo[1] < 0 ? 0 : 1;
-        teams[turn].push(pair[i]) 
-        teamElo[turn] += pair[i].elo
-    }
+//    console.log("randomTeam", randomTeam)
+    let oppsite = pair.filter(x => !randomTeam.includes(x))
+    oppsite.sort((a,b) => {
+        return b["elo"] - a["elo"]
+    })
+//    console.log("opposite", oppsite)
+    teams.push(randomTeam)
+    teams.push(oppsite);
+    teamElo.push(randomTeam.reduce(function add(sum, currValue) {
+        return sum + currValue.elo;
+    }, 0));
+    teamElo.push(oppsite.reduce(function add(sum, currValue) {
+        return sum + currValue.elo;
+    }, 0));
 
     let wps = []
     wps.push(100 * (1 / (1 + Math.pow(10, (teamElo[1]/5 - teamElo[0]/5)/400))))
     wps.push(100 * (1 / (1 + Math.pow(10, (teamElo[0]/5 - teamElo[1]/5)/400))))
+
+//    console.log(teams, teamElo, wps)
 
     res.status(200).send({ teams: teams, elos: teamElo, wps: wps})
 })

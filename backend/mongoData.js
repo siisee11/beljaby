@@ -6,6 +6,7 @@ const summonerSchema = new mongoose.Schema({
     accountId : { type: String, required: true },
     tier: { type: String, default: "UNRANK"},
     elo: {type : Number, default: 1000},
+    champion: {type : String, default: "Singed"}
 })
 
 const userSchema = new mongoose.Schema({
@@ -20,7 +21,7 @@ const userSchema = new mongoose.Schema({
 
 const joinSchema = new mongoose.Schema({
     currentGame: Boolean,
-    summoners: [ { type: mongoose.Schema.Types.ObjectId, ref: 'Summoner', unique: true} ],
+    summoners: [ { type: mongoose.Schema.Types.ObjectId, ref: 'Summoner'} ],
 })
 
 const matchSchema = new mongoose.Schema({

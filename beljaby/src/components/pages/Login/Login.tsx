@@ -3,7 +3,6 @@ import "./Login.css";
 import styled, {css} from "styled-components"
 import firebase from "firebase/app";
 import { auth, provider } from "../../../firebase";
-
 import { useSelector, useDispatch } from 'react-redux';
 import { setUserProfileThunk } from "../../../modules/google"
 import { getAppUserProfileThunk, setAppUserProfileThunk } from "../../../modules/beljabi"

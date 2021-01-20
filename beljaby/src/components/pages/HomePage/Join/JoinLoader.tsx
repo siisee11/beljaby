@@ -52,9 +52,14 @@ function JoinLoader() {
     //real time stuff...
     const tottoChannel = pusher.subscribe('totto-channel');
     tottoChannel.bind('newTotto', () => {
-        /* Why call this several times?? */
         history.push(`/totto`)
     });
+
+    return () => {
+      channel.unbind("newJoin")
+      channel.unbind("updateJoin")
+      tottoChannel.unbind("newTotto")
+    }
   }, [history])
 
   return (
@@ -66,7 +71,7 @@ function JoinLoader() {
             <div className="TextCard" >
               <h2 className="TextCard__Title" style={{marginBottom:"20px"}}>Join Current Match!</h2>
               { join && (<JoinInfo summoners={join.summoners}/> )}
-              { !joined && (<JoinForm onSubmitJoin={onSubmitJoin} />) }
+              { !joined && (!join || join.summoners.length < 10) && (<JoinForm onSubmitJoin={onSubmitJoin} />) }
             </div>
           )
         }
