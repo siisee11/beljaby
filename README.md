@@ -35,8 +35,20 @@
   - [x] ~~Elo 기반 팀 분배~~
   - [x] ~~자동 팀 메이킹~~
   - [x] ~~토토~~
+  - [X] ~~Docker~~
   - [ ] X맨 및 미션
   - [ ] 앱 개발
+
+## Docker를 이용해서 개발환경 구축
+일단 이 레파지토리를 다운로드 받는다.
+Docker와 docker-compose가 설치되어 있어야 한다.
+```bash
+$ git clone https://github.com/siisee11/beljaby
+```
+docker-compose 명령어를 통해 컨테이너를 빌드하고 실행한다.
+```bash
+$ docker-compose up -d
+```
 
 ## 개발 환경 준비
 Node.js 12.10.0 이상의 버전을 설치해야한다. 웹의 경우, 리엑트로 구현되었으므로 React Cli 툴을 설치해야한다.

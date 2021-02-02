@@ -1,5 +1,5 @@
 Arguments: 
-  /home/siisee11/.nvm/versions/node/v15.0.1/bin/node /mnt/c/Program Files (x86)/Yarn/bin/yarn.js add @type/redux-logger
+  /home/siisee11/.nvm/versions/node/v15.0.1/bin/node /mnt/c/Program Files (x86)/Yarn/bin/yarn.js add @types/react-navigation__native
 
 PATH: 
   /home/siisee11/.vscode-server/bin/ea3859d4ba2f3e577a159bc91e3074c5d85c0523/bin:/home/siisee11/.nvm/versions/node/v15.0.1/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/mnt/c/Program Files (x86)/Common Files/Oracle/Java/javapath:/mnt/c/Program Files (x86)/Common Files/Intel/Shared Libraries/redist/intel64/compiler:/mnt/c/Python27/:/mnt/c/Python27/Scripts:/mnt/c/WINDOWS/system32:/mnt/c/WINDOWS:/mnt/c/WINDOWS/System32/Wbem:/mnt/c/WINDOWS/System32/WindowsPowerShell/v1.0/:/mnt/c/WINDOWS/System32/OpenSSH/:/mnt/c/ProgramData/chocolatey/bin:/mnt/c/Program Files/Git/cmd:/mnt/c/Program Files (x86)/Yarn/bin/:/mnt/e/flutter/bin:/mnt/c/Program Files/nodejs/:/mnt/c/Program Files/OpenJDK/openjdk-8u275-b01/bin:/mnt/c/Users/NamJaeyoun/AppData/Local/Android/Sdk/platform-tools:/mnt/c/Users/NamJaeyoun/AppData/Local/Programs/Python/Python37/Scripts/:/mnt/c/Users/NamJaeyoun/AppData/Local/Programs/Python/Python37/:/mnt/c/Users/NamJaeyoun/AppData/Local/Microsoft/WindowsApps:/mnt/c/Program Files/JetBrains/IntelliJ IDEA 2019.2.3/bin:/mnt/c/Users/NamJaeyoun/AppData/Local/GitHubDesktop/bin:/mnt/c/Users/NamJaeyoun/AppData/Local/Programs/Microsoft VS Code/bin:/mnt/c/Users/NamJaeyoun/AppData/Local/Yarn/bin:/mnt/c/Users/NamJaeyoun/AppData/Local/Microsoft/WindowsApps:/mnt/c/Users/NamJaeyoun/AppData/Roaming/npm:/mnt/c/Users/NamJaeyoun/AppData/Local/Android/Sdk/platform-tools:/snap/bin:/home/siisee11/flutter/bin:/home/siisee11/flutter/bin
@@ -14,7 +14,7 @@ Platform:
   linux x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@type%2fredux-logger: Not found
+  Error: https://registry.yarnpkg.com/@types%2freact-navigation__native: Not found
       at Request.params.callback [as _callback] (/mnt/c/Program Files (x86)/Yarn/lib/cli.js:66036:18)
       at Request.self.callback (/mnt/c/Program Files (x86)/Yarn/lib/cli.js:140586:22)
       at Request.emit (node:events:327:20)
@@ -38,6 +38,7 @@ npm manifest:
     },
     "dependencies": {
       "@react-native-community/masked-view": "0.1.10",
+      "@types/redux-logger": "^3.0.8",
       "axios": "^0.21.1",
       "expo": "~40.0.0",
       "expo-firebase-recaptcha": "^1.3.0",
@@ -2180,6 +2181,13 @@ Lockfile:
     dependencies:
       "@types/prop-types" "*"
       csstype "^3.0.2"
+  
+  "@types/redux-logger@^3.0.8":
+    version "3.0.8"
+    resolved "https://registry.yarnpkg.com/@types/redux-logger/-/redux-logger-3.0.8.tgz#1fb6d26917bb198792bb1cf57feb31cae1532c5d"
+    integrity sha512-zM+cxiSw6nZtRbxpVp9SE3x/X77Z7e7YAfHD1NkxJyJbAGSXJGF0E9aqajZfPOa/sTYnuwutmlCldveExuCeLw==
+    dependencies:
+      redux "^4.0.0"
   
   "@types/redux@^3.6.0":
     version "3.6.0"

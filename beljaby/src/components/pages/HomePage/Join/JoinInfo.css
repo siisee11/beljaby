@@ -9,3 +9,8 @@
 .ant-progress-text {
     color: var(--foregroundPrimary) !important
 }
+
+#joininfo__p {
+    margin-top: 5px;
+    color: var(--foregroundPrimary) !important
+}

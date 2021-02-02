@@ -389,7 +389,7 @@ app.post('/new/join', async (req, res) => {
     console.log(summoner, "Joined.")
     let ret = await Join.updateOne(
         { currentGame: true },
-        { $push: {summoners : summoner}},
+        { $addToSet: {summoners : summoner}},
         { upsert: true }
     ).exec()
 

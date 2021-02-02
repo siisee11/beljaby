@@ -1,4 +1,5 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect, useState, useCallback } from 'react';
+import { StyleSheet, Text } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import Background from '../components/Background';
 import Logo from '../components/Logo';
@@ -8,6 +9,9 @@ import Button from '../components/Button';
 import { Navigation } from '../types';
 import { setUserProfileNullThunk } from "../modules/google"
 import { setAppUserProfileNullThunk } from "../modules/beljabi"
+import { RootState } from "../modules"
+import { getSummoner, getCurrentTotto, Summoner } from "../api/beljabi"
+import { theme } from "../core/theme"
 
 type Props = {
   navigation: Navigation;
@@ -15,6 +19,14 @@ type Props = {
 
 const Dashboard = ({ navigation }: Props) => {
   const dispatch = useDispatch()
+  const { data, loading } = useSelector((state: RootState) => state.beljabi.userProfile);
+  const [ summoner, setSummoner ] = useState<Summoner>()
+
+  const getSummonerInfo = useCallback( async () => {
+    const res = await getSummoner(data.summonerId);
+    setSummoner(res);
+  }, [data])
+
 
   const onSignOut = async () => {
     dispatch(setUserProfileNullThunk());
@@ -22,17 +34,17 @@ const Dashboard = ({ navigation }: Props) => {
     navigation.navigate('HomeScreen')
   }
 
+  useEffect(() => {
+    if (data) {
+        getSummonerInfo()
+    }
+  })
+
   return (
     <Background>
       <Logo />
-      <Header>Let’s start</Header>
-      <Paragraph>
-        Your amazing app starts here. Open you favourite code editor and start
-        editing this project.
-      </Paragraph>
-      <Button mode="outlined" onPress={onSignOut}>
-        Logout
-      </Button>
+      <Header>Hi, {data?.name}</Header>
+      <Paragraph>Your elo is {Math.round(summoner?.elo)}</Paragraph>
     </Background>
   );
 }

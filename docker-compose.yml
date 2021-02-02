@@ -1,0 +1,29 @@
+version: '3'
+services:
+    backend:
+        container_name: beljaby-backend
+        env_file:
+            "./backend/.env"
+        build:
+          context: ./backend
+          dockerfile: ./Dockerfile
+        ports:
+          - "3003:3003"
+        volumes:
+           - "./backend:/app/backend"
+           - "/app/backend/node_modules"
+    beljaby-react:
+        env_file:
+            "./beljaby/.env"
+        build:
+          context: ./beljaby
+          dockerfile: ./Dockerfile
+        ports:
+          - "3000:3000"
+        container_name: beljaby-react
+        stdin_open: true
+        volumes:
+           - "./beljaby:/app/beljaby"
+           - "/app/beljaby/node_modules"
+        links:
+           - "backend:be"

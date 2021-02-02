@@ -20,6 +20,13 @@ function JoinInfo({ summoners }: Summoner[]) {
             '100%': '#87d068',
           }}
           status="active"/>
+          {
+            summoners.map((summoner: Summoner) => {
+              return (
+                <p id="joininfo__p">{summoner.summonerName}</p>
+              )
+            })
+          }
       </animated.div>
     </>
   );
