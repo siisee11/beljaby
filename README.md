@@ -30,6 +30,8 @@
 # BELJABY 
 커스텀 게임 Elo 관리 및 자동 팀 분배. [Link](https://beljaby.click)
 
+<img src="beljabyScreen.JPG" /> 
+
 ## Roadmap
   - [x] ~~커스텀 Elo 계산~~
   - [x] ~~Elo 기반 팀 분배~~
